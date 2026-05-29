@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — The Happening Space</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#bc1f2e;--red-dark:#8f1520;--red-dim:rgba(188,31,46,0.1);
+  --black:#0a0a0a;--bg:#0f0f0f;--bg2:#161616;--bg3:#1c1c1c;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#f0ede6;--muted:rgba(240,237,230,0.4);--mid:rgba(240,237,230,0.65);
+  --yellow:#f5e642;--green:#5cb87a;--orange:#e8863a;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh}
+
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;background:var(--black);display:flex;align-items:center;justify-content:center;z-index:1000;padding:1.5rem}
+.login-box{width:100%;max-width:380px}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.1em;color:var(--text);margin-bottom:0.25rem}
+.login-logo span{color:var(--red)}
+.login-sub{font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:2.5rem}
+.login-label{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:0.5rem}
+.login-input{width:100%;background:var(--bg2);border:1px solid var(--border2);padding:0.8rem 1rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;margin-bottom:1rem;transition:border-color 0.2s}
+.login-input:focus{border-color:var(--red)}
+.login-btn{width:100%;background:var(--red);color:#fff;border:none;padding:0.9rem;font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;margin-top:0.5rem}
+.login-btn:hover{background:var(--red-dark)}
+.login-error{font-size:0.78rem;color:#e57373;margin-top:0.5rem;display:none}
+.login-error.show{display:block}
+
+/* LAYOUT */
+#appShell{display:none;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:220px;height:100vh;background:var(--black);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+.sidebar-logo{padding:1.5rem 1.25rem 1rem;border-bottom:1px solid var(--border)}
+.sidebar-logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.08em;color:var(--text)}
+.sidebar-logo-text span{color:var(--red)}
+.sidebar-tag{font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-top:0.2rem}
+.sidebar-nav{padding:1rem 0;flex:1}
+.nav-section-title{font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);padding:0.75rem 1.25rem 0.35rem;margin-top:0.5rem}
+.nav-item{display:flex;align-items:center;gap:0.75rem;padding:0.65rem 1.25rem;color:var(--mid);font-size:0.82rem;cursor:pointer;transition:color 0.2s,background 0.2s;border-left:2px solid transparent;user-select:none}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.03)}
+.nav-item.active{color:var(--text);border-left-color:var(--red);background:var(--red-dim)}
+.nav-item svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
+.nav-item .badge{margin-left:auto;background:var(--red);color:#fff;font-size:0.6rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:10px;font-family:'Syne',sans-serif}
+.sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border)}
+.logout-btn{display:flex;align-items:center;gap:0.6rem;color:var(--muted);font-size:0.78rem;cursor:pointer;transition:color 0.2s;background:none;border:none;font-family:'DM Sans',sans-serif;width:100%;padding:0}
+.logout-btn:hover{color:var(--red)}
+.logout-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* MAIN */
+.main{margin-left:220px;padding:2rem;min-height:100vh}
+.page-header{margin-bottom:2rem;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:0.04em;color:var(--text);line-height:1}
+.page-sub{font-size:0.8rem;color:var(--muted);margin-top:0.25rem}
+
+/* VIEWS */
+.view{display:none}
+.view.active{display:block}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--bg2);border:1px solid var(--border);padding:1.25rem 1.5rem}
+.stat-label{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:0.04em;line-height:1;color:var(--text)}
+.stat-val.red{color:var(--red)}
+.stat-val.green{color:var(--green)}
+.stat-val.yellow{color:var(--yellow)}
+.stat-meta{font-size:0.72rem;color:var(--muted);margin-top:0.25rem}
+
+/* TABLE */
+.table-wrap{background:var(--bg2);border:1px solid var(--border);overflow:hidden;margin-bottom:1.5rem}
+.table-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:0.75rem}
+.table-title{font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:600;color:var(--text)}
+.table-search{background:var(--bg3);border:1px solid var(--border);padding:0.5rem 0.85rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.82rem;outline:none;width:220px;transition:border-color 0.2s}
+.table-search:focus{border-color:var(--red)}
+.table-search::placeholder{color:var(--muted)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:0.65rem 1rem;background:var(--bg3);font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);font-family:'Syne',sans-serif;font-weight:600;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:0.75rem 1rem;border-bottom:1px solid var(--border);font-size:0.82rem;color:var(--mid);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.pill{display:inline-flex;align-items:center;font-size:0.62rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:2px;font-family:'Syne',sans-serif}
+.pill-green{background:rgba(92,184,122,0.15);color:var(--green);border:1px solid rgba(92,184,122,0.3)}
+.pill-red{background:rgba(188,31,46,0.15);color:#e57373;border:1px solid rgba(188,31,46,0.3)}
+.pill-yellow{background:rgba(245,230,66,0.12);color:var(--yellow);border:1px solid rgba(245,230,66,0.25)}
+.pill-orange{background:rgba(232,134,58,0.15);color:var(--orange);border:1px solid rgba(232,134,58,0.3)}
+.pill-grey{background:rgba(255,255,255,0.07);color:var(--muted);border:1px solid var(--border)}
+.pill-blue{background:rgba(66,135,245,0.15);color:#6ab0f5;border:1px solid rgba(66,135,245,0.3)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.55rem 1rem;font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border:none;transition:all 0.2s}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{background:var(--red-dark)}
+.btn-outline{background:transparent;color:var(--mid);border:1px solid var(--border2)}
+.btn-outline:hover{border-color:var(--red);color:var(--red)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:var(--border2)}
+.btn-danger{background:transparent;color:#e57373;border:1px solid rgba(229,115,115,0.3)}
+.btn-danger:hover{background:rgba(229,115,115,0.1)}
+.btn-green{background:rgba(92,184,122,0.15);color:var(--green);border:1px solid rgba(92,184,122,0.3)}
+.btn-green:hover{background:rgba(92,184,122,0.25)}
+.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5}
+.btn-sm{padding:0.35rem 0.7rem;font-size:0.65rem}
+.action-row{display:flex;gap:0.4rem;flex-wrap:wrap}
+
+/* WORKSHOP CARDS */
+.ws-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;margin-bottom:2rem}
+.ws-card{background:var(--bg2);border:1px solid var(--border);overflow:hidden;transition:border-color 0.2s}
+.ws-card:hover{border-color:var(--border2)}
+.ws-card-poster{height:120px;display:flex;align-items:flex-end;padding:0.85rem;position:relative}
+.ws-card-poster-bg{position:absolute;inset:0;background-size:cover;background-position:center}
+.ws-card-poster-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent)}
+.ws-card-poster-content{position:relative;z-index:1}
+.ws-card-artist{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.04em;color:#fff;line-height:1}
+.ws-card-style{font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-top:0.1rem}
+.ws-card-body{padding:1rem}
+.ws-card-meta{display:flex;gap:1rem;margin-bottom:0.85rem;flex-wrap:wrap}
+.ws-meta-item{font-size:0.75rem}
+.ws-meta-item strong{display:block;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.1rem;font-weight:400}
+.ws-meta-item span{color:var(--text)}
+.ws-spots-bar{margin-bottom:0.85rem}
+.spots-label{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--muted);margin-bottom:0.35rem}
+.spots-label span:last-child{color:var(--text)}
+.spots-track{height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden}
+.spots-fill{height:100%;background:var(--green);border-radius:2px;transition:width 0.5s ease}
+.spots-fill.warn{background:var(--orange)}
+.spots-fill.full{background:var(--red)}
+.ws-card-actions{display:flex;gap:0.5rem;flex-wrap:wrap}
+
+/* MODAL */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity 0.25s;backdrop-filter:blur(6px)}
+.modal-backdrop.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border2);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform 0.25s ease;position:relative}
+.modal-backdrop.open .modal{transform:translateY(0)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg2);z-index:1}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:0.04em;color:var(--text)}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:0.25rem;transition:color 0.2s;line-height:1}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:1.5rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.form-row.full{grid-template-columns:1fr}
+.form-group{display:flex;flex-direction:column;gap:0.4rem}
+.form-group label{font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);font-family:'Syne',sans-serif;font-weight:600}
+.form-group input,.form-group select,.form-group textarea{background:var(--bg3);border:1px solid var(--border2);padding:0.65rem 0.85rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;transition:border-color 0.2s;width:100%}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--red)}
+.form-group select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(240,237,230,0.4)'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.85rem center}
+.form-group option{background:#1c1c1c}
+.form-group textarea{resize:vertical;min-height:80px;line-height:1.6}
+.modal-foot{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.75rem;position:sticky;bottom:0;background:var(--bg2)}
+
+/* SLOTS EDITOR */
+.slots-editor{background:var(--bg3);border:1px solid var(--border);padding:1rem;margin-bottom:1rem}
+.slots-editor-title{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;font-family:'Syne',sans-serif;font-weight:600}
+.add-slot-btn{display:flex;align-items:center;gap:0.4rem;font-size:0.72rem;color:var(--red);background:none;border:1px dashed rgba(188,31,46,0.4);padding:0.5rem 0.85rem;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-top:0.25rem;transition:all 0.2s;width:100%;justify-content:center}
+.add-slot-btn:hover{background:var(--red-dim)}
+.slot-delete{background:none;border:1px solid rgba(229,115,115,0.2);color:#e57373;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;flex-shrink:0}
+.slot-delete:hover{background:rgba(229,115,115,0.1)}
+.slot-delete svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* CONFIRM */
+.confirm-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:600;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.confirm-backdrop.open{opacity:1;pointer-events:all}
+.confirm-box{background:var(--bg2);border:1px solid rgba(229,115,115,0.3);width:100%;max-width:360px;padding:2rem;text-align:center}
+.confirm-icon{font-size:2rem;margin-bottom:1rem}
+.confirm-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0.04em;color:var(--text);margin-bottom:0.5rem}
+.confirm-msg{font-size:0.85rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
+.confirm-btns{display:flex;gap:0.75rem;justify-content:center}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--bg2);border:1px solid var(--border2);padding:0.85rem 1.25rem;font-size:0.82rem;color:var(--text);z-index:9999;transform:translateY(100px);opacity:0;transition:all 0.3s ease;display:flex;align-items:center;gap:0.6rem;min-width:240px;border-left:3px solid var(--green)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{border-left-color:var(--red)}
+.toast svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.5;flex-shrink:0}
+.toast.success svg{stroke:var(--green)}
+.toast.error svg{stroke:var(--red)}
+
+/* SECTION BAR */
+.section-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.75rem}
+.section-bar-title{font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:0.6rem}
+.section-bar-title::before{content:'';width:3px;height:16px;background:var(--red);display:block}
+
+/* FILTER TABS */
+.filter-tabs{display:flex;gap:0.35rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.filter-tab{background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.4rem 0.85rem;font-family:'Syne',sans-serif;font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+.filter-tab:hover{border-color:var(--border2);color:var(--text)}
+.filter-tab.active{background:var(--red);border-color:var(--red);color:#fff}
+
+/* PRINT STYLES */
+@media print {
+  * { visibility: hidden !important; }
+  #printArea, #printArea * { visibility: visible !important; }
+  #printArea {
+    position: fixed !important;
+    inset: 0 !important;
+    background: white !important;
+    color: black !important;
+    padding: 1.5cm !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 11pt !important;
+    z-index: 99999 !important;
+  }
+  #printArea * {
+    background: white !important;
+    color: black !important;
+    border-color: #000 !important;
+    font-family: Arial, sans-serif !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  @page { size: A4; margin: 1.5cm; }
+  .print-header { margin-bottom: 1rem !important; border-bottom: 2px solid #000 !important; padding-bottom: 0.75rem !important; }
+  .print-studio { font-size: 9pt !important; color: #555 !important; margin-bottom: 0.2rem !important; }
+  .print-artist { font-size: 18pt !important; font-weight: 700 !important; margin-bottom: 0.2rem !important; color: #000 !important; }
+  .print-details { font-size: 10pt !important; color: #333 !important; margin-bottom: 0.15rem !important; }
+  .print-stats { font-size: 9pt !important; color: #555 !important; margin-top: 0.4rem !important; }
+  .print-cols { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0 1cm !important; margin-top: 0.75rem !important; }
+  .print-col-header { display: grid !important; grid-template-columns: 1.5rem 70% 30% !important; font-size: 8pt !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; color: #000 !important; border-bottom: 2px solid #000 !important; padding-bottom: 0.3rem !important; margin-bottom: 0.3rem !important; }
+  .print-row { display: grid !important; grid-template-columns: 1.5rem 70% 30% !important; padding: 0.28rem 0 !important; border-bottom: 1px solid #ccc !important; font-size: 10pt !important; page-break-inside: avoid !important; }
+  .print-num { color: #888 !important; font-size: 8pt !important; padding-top: 1px !important; }
+  .print-name { font-weight: 500 !important; padding-right: 0.5rem !important; color: #000 !important; }
+  .print-phone { color: #111 !important; font-size: 9.5pt !important; }
+  .print-footer { margin-top: 1rem !important; font-size: 8pt !important; color: #888 !important; border-top: 1px solid #ccc !important; padding-top: 0.5rem !important; display: flex !important; justify-content: space-between !important; }
+}
+#printArea { display: none; }
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite}
+
+@media(max-width:768px){
+  .sidebar{width:100%;height:auto;position:relative}
+  .main{margin-left:0;padding:1.25rem}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">The <span>Happening</span> Space</div>
+    <p class="login-sub">Admin Panel</p>
+    <label class="login-label" for="loginUser">Username</label>
+    <input class="login-input" id="loginUser" type="text" placeholder="admin" autocomplete="username">
+    <label class="login-label" for="loginPass">Password</label>
+    <input class="login-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Enter Admin Panel</button>
+    <p class="login-error" id="loginError">Incorrect username or password.</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appShell">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-text">The <span>Happening</span> Space</div>
+      <div class="sidebar-tag">Admin Panel</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Overview</div>
+      <div class="nav-item active" onclick="showView('dashboard')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
+      </div>
+      <div class="nav-section-title">Workshops</div>
+      <div class="nav-item" onclick="showView('workshops')">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>All Workshops
+      </div>
+      <div class="nav-item" onclick="showView('workshops');setTimeout(openAddWorkshop,100)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Add New Workshop
+      </div>
+      <div class="nav-section-title">Students</div>
+      <div class="nav-item" onclick="showView('registrations')">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Registrations <span class="badge" id="regBadge">0</span>
+      </div>
+      <div class="nav-item" onclick="showView('payments')">
+        <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Payments
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="doLogout()">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Log Out
+      </button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="page-header">
+        <div><h1 class="page-title">Dashboard</h1><p class="page-sub" id="dashDate"></p></div>
+        <button class="btn btn-red" onclick="showView('workshops');setTimeout(openAddWorkshop,100)">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Workshop
+        </button>
+      </div>
+      <div class="stats-grid" id="dashStats"></div>
+      <div class="section-bar"><span class="section-bar-title">Active Workshops</span><button class="btn btn-outline btn-sm" onclick="showView('workshops')">View All</button></div>
+      <div class="ws-grid" id="dashWorkshops"></div>
+      <div class="section-bar" style="margin-top:1rem"><span class="section-bar-title">Recent Registrations</span><button class="btn btn-outline btn-sm" onclick="showView('registrations')">View All</button></div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Name</th><th>Workshop</th><th>Package</th><th>Amount</th><th>Type</th><th>Time</th></tr></thead>
+        <tbody id="dashRecentReg"></tbody></table>
+      </div>
+    </div>
+
+    <!-- WORKSHOPS -->
+    <div class="view" id="view-workshops">
+      <div class="page-header">
+        <div><h1 class="page-title">Workshops</h1><p class="page-sub">Manage all workshops, slots and availability</p></div>
+        <button class="btn btn-red" onclick="openAddWorkshop()">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Workshop
+        </button>
+      </div>
+      <div class="filter-tabs" id="workshopFilters">
+        <button class="filter-tab active" onclick="filterWorkshops('all',this)">All</button>
+        <button class="filter-tab" onclick="filterWorkshops('active',this)">Active</button>
+        <button class="filter-tab" onclick="filterWorkshops('full',this)">Full</button>
+        <button class="filter-tab" onclick="filterWorkshops('cancelled',this)">Cancelled</button>
+        <button class="filter-tab" onclick="filterWorkshops('completed',this)">Completed</button>
+      </div>
+      <div class="ws-grid" id="workshopGrid"></div>
+    </div>
+
+    <!-- REGISTRATIONS -->
+    <div class="view" id="view-registrations">
+      <div class="page-header">
+        <div><h1 class="page-title">Registrations</h1><p class="page-sub">All student enrollments</p></div>
+        <button class="btn btn-outline" onclick="exportCSV()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV
+        </button>
+      </div>
+      <div class="filter-tabs" id="regFilters"><button class="filter-tab active" onclick="filterRegs('all',this)">All</button></div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <span class="table-title">Student Registrations</span>
+          <input class="table-search" placeholder="Search name or phone…" oninput="searchRegs(this.value)">
+        </div>
+        <table><thead><tr><th>Name</th><th>Phone</th><th>Workshop</th><th>Package</th><th>Slot</th><th>Song</th><th>Amount</th><th>Type</th><th>Payment ID</th><th>Time</th><th></th></tr></thead>
+        <tbody id="regTable"></tbody></table>
+      </div>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div class="view" id="view-payments">
+      <div class="page-header"><div><h1 class="page-title">Payments</h1><p class="page-sub">Revenue tracking</p></div></div>
+      <div class="stats-grid" id="paymentStats"></div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <span class="table-title">All Transactions</span>
+          <input class="table-search" placeholder="Search payment ID…" oninput="searchPayments(this.value)">
+        </div>
+        <table><thead><tr><th>Payment ID</th><th>Name</th><th>Workshop</th><th>Amount</th><th>Type</th><th>Date</th></tr></thead>
+        <tbody id="payTable"></tbody></table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ADD/EDIT WORKSHOP MODAL -->
+<div class="modal-backdrop" id="wsModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 class="modal-title" id="wsModalTitle">Add Workshop</h2>
+      <button class="modal-close" onclick="closeModal('wsModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="wsEditId">
+      <div class="form-row">
+        <div class="form-group"><label>Artist Name *</label><input type="text" id="wsArtist" placeholder="e.g. Heet Samani"></div>
+        <div class="form-group"><label>Initials</label><input type="text" id="wsInitials" placeholder="HS" maxlength="3"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Dance Style *</label><input type="text" id="wsStyle" placeholder="Hip-Hop · Breaking"></div>
+        <div class="form-group"><label>Status</label>
+          <select id="wsStatus">
+            <option value="active">Active</option>
+            <option value="full">Full</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group"><label>Workshop Description</label><textarea id="wsDesc" placeholder="What students will learn…"></textarea></div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group"><label>Artist Bio</label><textarea id="wsBio" placeholder="About the artist…"></textarea></div>
+      </div>
+      <!-- POSTER -->
+      <div class="form-row full">
+        <div class="form-group">
+          <label>Workshop Poster Image</label>
+          <div id="posterUploadArea" style="border:1px dashed rgba(188,31,46,0.4);padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative" onclick="document.getElementById('posterFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='#bc1f2e'" ondragleave="this.style.borderColor='rgba(188,31,46,0.4)'" ondrop="handlePosterDrop(event)">
+            <input type="file" id="posterFileInput" accept="image/*" style="display:none" onchange="handlePosterSelect(this)">
+            <div id="posterPreview" style="display:none;margin-bottom:0.75rem">
+              <img id="posterPreviewImg" style="max-height:140px;max-width:100%;object-fit:contain;border:1px solid var(--border)">
+            </div>
+            <p id="posterUploadText" style="font-size:0.8rem;color:var(--muted)">Click or drag & drop poster image here</p>
+            <p style="font-size:0.68rem;color:var(--muted);margin-top:0.3rem">JPG, PNG · Recommended 600×800px</p>
+          </div>
+        </div>
+      </div>
+      <!-- PACKAGES -->
+      <div class="slots-editor" style="margin-top:0.5rem">
+        <div class="slots-editor-title">Packages / Pricing</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 28px;gap:0.5rem;margin-bottom:0.4rem">
+          <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Package Name</span>
+          <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Price ₹</span>
+          <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Badge</span>
+          <span></span>
+        </div>
+        <div id="packagesEditor"></div>
+        <button class="add-slot-btn" onclick="addPackageRow()">+ Add Package</button>
+      </div>
+      <!-- CLASS DETAILS -->
+      <div class="slots-editor">
+        <div class="slots-editor-title">Class Details</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 80px 32px;gap:0.5rem;margin-bottom:0.4rem">
+          <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Date</span>
+          <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Time</span>
+          <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Song / Track</span>
+          <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Spots</span>
+          <span></span>
+        </div>
+        <div id="slotsEditor"></div>
+        <button class="add-slot-btn" onclick="addSlotRow()">+ Add Class</button>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('wsModal')">Cancel</button>
+      <button class="btn btn-red" onclick="saveWorkshop()">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Save Workshop
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MANUAL STUDENT MODAL -->
+<div class="modal-backdrop" id="manualModal">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-head">
+      <h2 class="modal-title">Add Student Manually</h2>
+      <button class="modal-close" onclick="closeModal('manualModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1.25rem" id="manualWorkshopName"></p>
+      <div class="form-row">
+        <div class="form-group"><label>Full Name *</label><input type="text" id="manualName" placeholder="Student name"></div>
+        <div class="form-group"><label>WhatsApp Number *</label><input type="tel" id="manualPhone" placeholder="+91 98765 43210"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Package</label><select id="manualPackage"></select></div>
+        <div class="form-group"><label>Class Slot</label><select id="manualSlot"></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Amount Paid ₹</label><input type="number" id="manualAmount" placeholder="0"></div>
+        <div class="form-group"><label>Payment Type</label>
+          <select id="manualPayType">
+            <option value="Cash">Cash</option>
+            <option value="UPI">UPI Manual</option>
+            <option value="Free">Free / Complimentary</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('manualModal')">Cancel</button>
+      <button class="btn btn-red" onclick="saveManualStudent()">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Add Student
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SPOTS MODAL -->
+<div class="modal-backdrop" id="spotsModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-head">
+      <h2 class="modal-title">Edit Spots</h2>
+      <button class="modal-close" onclick="closeModal('spotsModal')">✕</button>
+    </div>
+    <div class="modal-body" id="spotsModalBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('spotsModal')">Cancel</button>
+      <button class="btn btn-red" onclick="saveSpots()">Save Spots</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="confirm-backdrop" id="confirmBackdrop">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">Delete Workshop?</div>
+    <p class="confirm-msg" id="confirmMsg">This will permanently remove this workshop.</p>
+    <div class="confirm-btns">
+      <button class="btn btn-ghost" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDeleteAction()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">Saved</span>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, addDoc, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+/* ══════════════════════════════════════
+   FIREBASE CONFIG
+══════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey: "AIzaSyCvGMYRUhDAr4r2zoTbnRJ3PiCwhCWxLFs",
+  authDomain: "the-happening-space.firebaseapp.com",
+  projectId: "the-happening-space",
+  storageBucket: "the-happening-space.firebasestorage.app",
+  messagingSenderId: "834905576967",
+  appId: "1:834905576967:web:b16776452b9111b6483ca2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+/* ══════════════════════════════════════
+   CONFIG — CHANGE PASSWORDS HERE
+══════════════════════════════════════ */
+const ADMINS = [
+  { user: 'chikki',  pass: 'happening2025' },
+  { user: 'staff1',  pass: 'space2025' },
+  { user: 'staff2',  pass: 'studio2025' },
+];
+
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbysvGH62COvPcA6m0J-z4Jyun1EnQwg4uPwivCdB9j86mJ5mhw3N0wANF-xlA3TB_iCEg/exec';
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let workshops      = [];
+let registrations  = [];
+let deleteTargetId = null;
+let editingSpotsId = null;
+let manualWsId     = null;
+let pendingPosterURL = null;
+let currentWsFilter  = 'all';
+let currentRegFilter = 'all';
+let regSearchQ = '';
+
+/* ══════════════════════════════════════
+   LOGIN
+══════════════════════════════════════ */
+window.doLogin = function(){
+  const u  = document.getElementById('loginUser').value.trim();
+  const p  = document.getElementById('loginPass').value;
+  const ok = ADMINS.find(a => a.user===u && a.pass===p);
+  if(ok){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appShell').style.display    = 'block';
+    sessionStorage.setItem('ths_auth','1');
+    initApp();
+  } else {
+    document.getElementById('loginError').classList.add('show');
+  }
+};
+
+window.doLogout = function(){
+  sessionStorage.removeItem('ths_auth');
+  document.getElementById('appShell').style.display    = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginPass').value = '';
+};
+
+if(sessionStorage.getItem('ths_auth')==='1'){
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appShell').style.display    = 'block';
+  document.addEventListener('DOMContentLoaded', initApp);
+}
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+async function initApp(){
+  document.getElementById('dashDate').textContent =
+    new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  showToast('Loading data…');
+  await Promise.all([listenWorkshops(), listenRegistrations()]);
+}
+
+/* ══════════════════════════════════════
+   FIREBASE LISTENERS (real-time)
+══════════════════════════════════════ */
+function listenWorkshops(){
+  return new Promise(resolve => {
+    onSnapshot(collection(db,'workshops'), snap => {
+      workshops = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      workshops.sort((a,b) => (a.createdAt||0) - (b.createdAt||0));
+      window._workshops = workshops; // expose for print
+      renderDashboard();
+      renderWorkshopGrid();
+      updateRegFilters();
+      resolve();
+    });
+  });
+}
+
+function listenRegistrations(){
+  return new Promise(resolve => {
+    onSnapshot(collection(db,'registrations'), snap => {
+      registrations = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      registrations.sort((a,b) => (b.timestamp||'').localeCompare(a.timestamp||''));
+      window._registrations = registrations; // expose for print
+      renderDashboard();
+      renderRegTable();
+      renderPayTable();
+      updateRegBadge();
+      resolve();
+    });
+  });
+}
+
+/* ══════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════ */
+window.showView = function(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('active');
+  });
+};
+
+/* ══════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════ */
+function renderDashboard(){
+  const active   = workshops.filter(w=>w.status==='active').length;
+  const revenue  = registrations.reduce((s,r)=>s+(parseFloat(r.amount_paid)||0),0);
+  const totalSp  = workshops.reduce((s,w)=>s+(w.slots||[]).reduce((ss,sl)=>ss+(parseInt(sl.totalSpots)||0),0),0);
+  const usedSp   = workshops.reduce((s,w)=>s+(w.slots||[]).reduce((ss,sl)=>ss+((parseInt(sl.totalSpots)||0)-(parseInt(sl.spots)||0)),0),0);
+
+  document.getElementById('dashStats').innerHTML = `
+    <div class="stat-card"><p class="stat-label">Active Workshops</p><p class="stat-val red">${active}</p><p class="stat-meta">${workshops.length} total</p></div>
+    <div class="stat-card"><p class="stat-label">Total Registrations</p><p class="stat-val">${registrations.length}</p></div>
+    <div class="stat-card"><p class="stat-label">Revenue</p><p class="stat-val green">₹${revenue.toLocaleString('en-IN')}</p></div>
+    <div class="stat-card"><p class="stat-label">Spots Filled</p><p class="stat-val yellow">${usedSp}/${totalSp}</p></div>
+  `;
+
+  const upcoming = workshops.filter(w=>w.status==='active').slice(0,3);
+  document.getElementById('dashWorkshops').innerHTML = upcoming.length
+    ? upcoming.map(wsCardHTML).join('') : '<p style="color:var(--muted);font-size:0.85rem">No active workshops.</p>';
+
+  const recent = registrations.slice(0,5);
+  document.getElementById('dashRecentReg').innerHTML = recent.length
+    ? recent.map(r=>`<tr>
+        <td style="color:var(--text)">${r.name||'—'}</td>
+        <td>${r.workshop||'—'}</td>
+        <td>${r.package||'—'}</td>
+        <td style="color:var(--yellow)">₹${parseFloat(r.amount_paid||0).toLocaleString('en-IN')}</td>
+        <td>${payTypePill(r.payment_type)}</td>
+        <td style="font-size:0.72rem;color:var(--muted)">${r.timestamp||'—'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem">No registrations yet</td></tr>';
+}
+
+function payTypePill(t){
+  if(!t||t==='Online') return '<span class="pill pill-green">Online</span>';
+  if(t==='Cash')   return '<span class="pill pill-yellow">Cash</span>';
+  if(t==='Free')   return '<span class="pill pill-blue">Free</span>';
+  return `<span class="pill pill-orange">${t}</span>`;
+}
+
+/* ══════════════════════════════════════
+   WORKSHOP CARD HTML
+══════════════════════════════════════ */
+function wsCardHTML(w){
+  const slots    = w.slots||[];
+  const packages = w.packages||[];
+  const totalSp  = slots.reduce((s,sl)=>s+(parseInt(sl.totalSpots)||0),0);
+  const usedSp   = slots.reduce((s,sl)=>s+((parseInt(sl.totalSpots)||0)-(parseInt(sl.spots)||0)),0);
+  const pct      = totalSp>0 ? Math.round(usedSp/totalSp*100) : 0;
+  const minPrice = packages.length ? Math.min(...packages.map(p=>parseInt(p.price)||0)) : 0;
+  const statusPill = {active:'pill-green',full:'pill-red',cancelled:'pill-orange',completed:'pill-grey'}[w.status]||'pill-grey';
+  const bgStyle  = w.poster && w.poster.startsWith('data:')
+    ? `background-image:url('${w.poster}');background-size:cover;background-position:center`
+    : `background:${w.posterBg||'linear-gradient(135deg,#1a0407,#bc1f2e)'}`;
+
+  return `<div class="ws-card">
+    <div class="ws-card-poster">
+      <div class="ws-card-poster-bg" style="${bgStyle}"></div>
+      <div class="ws-card-poster-overlay"></div>
+      <div class="ws-card-poster-content">
+        <p class="ws-card-artist">${w.artist||'—'}</p>
+        <p class="ws-card-style">${w.style||'—'}</p>
+      </div>
+    </div>
+    <div class="ws-card-body">
+      <div class="ws-card-meta">
+        <div class="ws-meta-item"><strong>Status</strong><span class="pill ${statusPill}">${w.status}</span></div>
+        <div class="ws-meta-item"><strong>From</strong><span style="color:var(--yellow)">₹${minPrice.toLocaleString('en-IN')}</span></div>
+        <div class="ws-meta-item"><strong>Slots</strong><span>${slots.length}</span></div>
+        ${slots[0]?.song?`<div class="ws-meta-item"><strong>Song</strong><span style="color:var(--muted);font-size:0.72rem">♪ ${slots[0].song}</span></div>`:''}
+      </div>
+      <div class="ws-spots-bar">
+        <div class="spots-label"><span>Spots filled</span><span>${usedSp}/${totalSp}</span></div>
+        <div class="spots-track"><div class="spots-fill ${pct>=100?'full':pct>=75?'warn':''}" style="width:${pct}%"></div></div>
+      </div>
+      <div class="ws-card-actions">
+        <button class="btn btn-outline btn-sm" onclick="openEditWorkshop('${w.id}')">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="openSpotsModal('${w.id}')">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg>Spots
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="openManualStudent('${w.id}')">
+          <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>Add Student
+        </button>
+        ${slots.map((s,si)=>`<button class="btn btn-ghost btn-sm" onclick="printSlot('${w.id}','${s.id}')">
+          <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print Slot ${si+1}
+        </button>`).join('')}
+        <button class="btn btn-outline btn-sm" onclick="cycleStatus('${w.id}')">
+          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Status
+        </button>
+        <button class="btn btn-danger btn-sm" onclick="openConfirmDelete('${w.id}')">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════
+   WORKSHOPS GRID
+══════════════════════════════════════ */
+function renderWorkshopGrid(){
+  const filtered = currentWsFilter==='all' ? workshops : workshops.filter(w=>w.status===currentWsFilter);
+  document.getElementById('workshopGrid').innerHTML = filtered.length
+    ? filtered.map(wsCardHTML).join('')
+    : '<p style="color:var(--muted);padding:3rem;text-align:center">No workshops in this category.</p>';
+}
+
+window.filterWorkshops = function(f,el){
+  currentWsFilter=f;
+  document.querySelectorAll('#workshopFilters .filter-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderWorkshopGrid();
+};
+
+window.cycleStatus = async function(id){
+  const w     = workshops.find(x=>x.id===id);
+  const order = ['active','full','cancelled','completed'];
+  w.status    = order[(order.indexOf(w.status)+1)%order.length];
+  await setDoc(doc(db,'workshops',id), w);
+  showToast('Status → ' + w.status);
+};
+
+/* ══════════════════════════════════════
+   POSTER
+══════════════════════════════════════ */
+window.handlePosterSelect = function(input){
+  if(input.files&&input.files[0]) loadPoster(input.files[0]);
+};
+window.handlePosterDrop = function(e){
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if(file&&file.type.startsWith('image/')) loadPoster(file);
+};
+function loadPoster(file){
+  const reader = new FileReader();
+  reader.onload = e => {
+    pendingPosterURL = e.target.result;
+    document.getElementById('posterPreviewImg').src = e.target.result;
+    document.getElementById('posterPreview').style.display = 'block';
+    document.getElementById('posterUploadText').textContent = '✓ ' + file.name;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ══════════════════════════════════════
+   ADD / EDIT WORKSHOP
+══════════════════════════════════════ */
+window.openAddWorkshop = function(){
+  document.getElementById('wsModalTitle').textContent = 'Add New Workshop';
+  document.getElementById('wsEditId').value   = '';
+  document.getElementById('wsArtist').value   = '';
+  document.getElementById('wsInitials').value = '';
+  document.getElementById('wsStyle').value    = '';
+  document.getElementById('wsStatus').value   = 'active';
+  document.getElementById('wsDesc').value     = '';
+  document.getElementById('wsBio').value      = '';
+  document.getElementById('posterPreview').style.display = 'none';
+  document.getElementById('posterUploadText').textContent = 'Click or drag & drop poster image here';
+  document.getElementById('packagesEditor').innerHTML = '';
+  document.getElementById('slotsEditor').innerHTML    = '';
+  pendingPosterURL = null;
+  addPackageRow(); addSlotRow();
+  openModal('wsModal');
+};
+
+window.openEditWorkshop = function(id){
+  const w = workshops.find(x=>x.id===id);
+  document.getElementById('wsModalTitle').textContent = 'Edit Workshop';
+  document.getElementById('wsEditId').value   = id;
+  document.getElementById('wsArtist').value   = w.artist||'';
+  document.getElementById('wsInitials').value = w.initials||'';
+  document.getElementById('wsStyle').value    = w.style||'';
+  document.getElementById('wsStatus').value   = w.status||'active';
+  document.getElementById('wsDesc').value     = w.desc||'';
+  document.getElementById('wsBio').value      = w.bio||'';
+  pendingPosterURL = w.poster||null;
+  if(w.poster){
+    document.getElementById('posterPreviewImg').src = w.poster;
+    document.getElementById('posterPreview').style.display = 'block';
+    document.getElementById('posterUploadText').textContent = 'Poster loaded ✓';
+  } else {
+    document.getElementById('posterPreview').style.display = 'none';
+    document.getElementById('posterUploadText').textContent = 'Click or drag & drop poster image here';
+  }
+  document.getElementById('packagesEditor').innerHTML = '';
+  (w.packages||[]).forEach(p=>addPackageRow(p));
+  document.getElementById('slotsEditor').innerHTML = '';
+  (w.slots||[]).forEach(s=>addSlotRow(s));
+  openModal('wsModal');
+};
+
+window.addPackageRow = function(p={}){
+  const div = document.createElement('div');
+  div.style.cssText = 'display:grid;grid-template-columns:2fr 1fr 1fr 28px;gap:0.5rem;margin-bottom:0.5rem;align-items:center';
+  div.innerHTML = `
+    <input type="text"   placeholder="e.g. Single Session" value="${p.name||''}" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none" class="pkg-name">
+    <input type="number" placeholder="900" value="${p.price||''}" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none" class="pkg-price">
+    <input type="text"   placeholder="Best Value" value="${p.badge||''}" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none" class="pkg-badge">
+    <button onclick="this.parentElement.remove()" class="slot-delete"><svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  document.getElementById('packagesEditor').appendChild(div);
+};
+
+window.addSlotRow = function(s={}){
+  const div = document.createElement('div');
+  div.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr 80px 32px;gap:0.5rem;margin-bottom:0.5rem;align-items:center';
+  div.innerHTML = `
+    <input type="text"   placeholder="Saturday, 7 Jun 2025" value="${s.date||''}" class="slot-date-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
+    <input type="text"   placeholder="11:00 AM – 1:00 PM"   value="${s.time||''}" class="slot-time-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
+    <input type="text"   placeholder="e.g. Calm Down – Rema" value="${s.song||''}" class="slot-song-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
+    <input type="number" placeholder="20" value="${s.totalSpots||''}" min="1" class="slot-spots-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
+    <button onclick="this.parentElement.remove()" class="slot-delete"><svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  document.getElementById('slotsEditor').appendChild(div);
+};
+
+window.saveWorkshop = async function(){
+  const artist = document.getElementById('wsArtist').value.trim();
+  if(!artist){ showToast('Artist name is required','error'); return; }
+
+  const btn = document.querySelector('#wsModal .btn-red');
+  btn.innerHTML = '<span class="spinner"></span> Saving…';
+  btn.disabled  = true;
+
+  const editId = document.getElementById('wsEditId').value;
+  const id     = editId || artist.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+
+  const pkgRows  = document.querySelectorAll('#packagesEditor > div');
+  const packages = Array.from(pkgRows).map((row,i)=>({
+    id:'p'+(i+1), name:row.querySelector('.pkg-name').value.trim(),
+    price:parseInt(row.querySelector('.pkg-price').value)||0,
+    badge:row.querySelector('.pkg-badge').value.trim()||null,
+  })).filter(p=>p.name);
+
+  const slotRows = document.querySelectorAll('#slotsEditor > div');
+  const existing = editId ? workshops.find(w=>w.id===editId) : null;
+  const slots    = Array.from(slotRows).map((row,i)=>{
+    const total = parseInt(row.querySelector('.slot-spots-inp').value)||20;
+    const prev  = existing?.slots?.[i];
+    return {
+      id:'s'+(i+1),
+      date: row.querySelector('.slot-date-inp').value.trim(),
+      time: row.querySelector('.slot-time-inp').value.trim(),
+      song: row.querySelector('.slot-song-inp').value.trim(),
+      totalSpots: total,
+      spots: prev ? prev.spots : total,
+    };
+  }).filter(s=>s.date);
+
+  // Compress poster if it's a base64 image (Firestore has 1MB doc limit)
+  let posterToSave = pendingPosterURL || existing?.poster || '';
+  if(posterToSave && posterToSave.startsWith('data:')) {
+    posterToSave = await compressImage(posterToSave, 400, 0.6);
+  }
+
+  const wsData = {
+    artist, id,
+    initials: document.getElementById('wsInitials').value.trim() || artist.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2),
+    style:    document.getElementById('wsStyle').value.trim(),
+    status:   document.getElementById('wsStatus').value,
+    poster:   posterToSave,
+    posterBg: existing?.posterBg || 'linear-gradient(145deg,#1a0407,#bc1f2e)',
+    desc:     document.getElementById('wsDesc').value.trim(),
+    bio:      document.getElementById('wsBio').value.trim(),
+    tag:      'Workshop',
+    bioTitle: document.getElementById('wsStyle').value.trim(),
+    packages, slots,
+    createdAt: existing?.createdAt || Date.now(),
+  };
+
+  try {
+    await setDoc(doc(db,'workshops',id), wsData);
+    closeModal('wsModal');
+    showToast(editId ? 'Workshop updated!' : 'Workshop added & live on website!');
+  } catch(e) {
+    // If still too large, save without poster
+    wsData.poster = '';
+    await setDoc(doc(db,'workshops',id), wsData);
+    closeModal('wsModal');
+    showToast('Workshop saved! Poster was too large — add a smaller image.');
+  }
+  btn.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Save Workshop';
+  btn.disabled  = false;
+};
+
+/* ── IMAGE COMPRESSION ── */
+function compressImage(dataUrl, maxWidth, quality) {
+  return new Promise(resolve => {
+    const img    = new Image();
+    img.onload   = () => {
+      const canvas = document.createElement('canvas');
+      const ratio  = Math.min(maxWidth / img.width, maxWidth / img.height, 1);
+      canvas.width  = img.width  * ratio;
+      canvas.height = img.height * ratio;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src = dataUrl;
+  });
+}
+
+/* ══════════════════════════════════════
+   SPOTS MODAL
+══════════════════════════════════════ */
+window.openSpotsModal = function(id){
+  editingSpotsId = id;
+  const w = workshops.find(x=>x.id===id);
+  document.getElementById('spotsModalBody').innerHTML = `
+    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1.25rem">${w.artist}</p>
+    ${(w.slots||[]).map((s,i)=>`
+      <div style="margin-bottom:1rem;background:var(--bg3);border:1px solid var(--border);padding:1rem">
+        <p style="font-size:0.82rem;font-weight:500;color:var(--text);margin-bottom:0.15rem">${s.date}</p>
+        <p style="font-size:0.72rem;color:var(--muted);margin-bottom:0.75rem">${s.time}${s.song?' · ♪ '+s.song:''}</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem">
+          <div class="form-group"><label>Total Spots</label><input type="number" id="totalSpots_${i}" value="${s.totalSpots||20}" min="1"></div>
+          <div class="form-group"><label>Spots Remaining</label><input type="number" id="remSpots_${i}" value="${s.spots||0}" min="0"></div>
+        </div>
+        <div class="form-group"><label>Song / Track</label><input type="text" id="songInp_${i}" value="${s.song||''}" placeholder="e.g. Calm Down – Rema"></div>
+      </div>`).join('')}`;
+  openModal('spotsModal');
+};
+
+window.saveSpots = async function(){
+  const w = workshops.find(x=>x.id===editingSpotsId);
+  w.slots.forEach((s,i)=>{
+    s.totalSpots = parseInt(document.getElementById('totalSpots_'+i).value)||20;
+    s.spots      = parseInt(document.getElementById('remSpots_'+i).value)||0;
+    s.spots      = Math.min(s.spots, s.totalSpots);
+    const sg     = document.getElementById('songInp_'+i);
+    if(sg) s.song = sg.value.trim();
+  });
+  await setDoc(doc(db,'workshops',editingSpotsId), w);
+  closeModal('spotsModal');
+  showToast('Class details updated!');
+};
+
+/* ══════════════════════════════════════
+   DELETE
+══════════════════════════════════════ */
+window.openConfirmDelete = function(id){
+  deleteTargetId = id;
+  const w = workshops.find(x=>x.id===id);
+  document.getElementById('confirmMsg').textContent = `Delete "${w.artist}"? This cannot be undone.`;
+  document.getElementById('confirmBackdrop').classList.add('open');
+};
+window.closeConfirm = function(){
+  document.getElementById('confirmBackdrop').classList.remove('open');
+  deleteTargetId = null;
+};
+window.confirmDeleteAction = async function(){
+  await deleteDoc(doc(db,'workshops',deleteTargetId));
+  closeConfirm();
+  showToast('Workshop deleted');
+};
+
+/* ══════════════════════════════════════
+   MANUAL STUDENT
+══════════════════════════════════════ */
+window.openManualStudent = function(wsId){
+  manualWsId = wsId;
+  const w = workshops.find(x=>x.id===wsId);
+  document.getElementById('manualWorkshopName').textContent = 'Adding student to: ' + w.artist;
+  document.getElementById('manualName').value   = '';
+  document.getElementById('manualPhone').value  = '';
+  document.getElementById('manualAmount').value = '';
+
+  const pkgSel  = document.getElementById('manualPackage');
+  pkgSel.innerHTML = (w.packages||[]).map(p=>`<option value="${p.name}">₹${p.price} — ${p.name}</option>`).join('');
+
+  const slotSel = document.getElementById('manualSlot');
+  slotSel.innerHTML = (w.slots||[]).map(s=>`<option value="${s.id}">${s.date} · ${s.time}</option>`).join('');
+
+  openModal('manualModal');
+};
+
+window.saveManualStudent = async function(){
+  const name  = document.getElementById('manualName').value.trim();
+  const phone = document.getElementById('manualPhone').value.trim();
+  if(!name||!phone){ showToast('Name and phone are required','error'); return; }
+
+  const w       = workshops.find(x=>x.id===manualWsId);
+  const slotId  = document.getElementById('manualSlot').value;
+  const slot    = (w.slots||[]).find(s=>s.id===slotId);
+  const pkg     = document.getElementById('manualPackage').value;
+  const amount  = parseFloat(document.getElementById('manualAmount').value)||0;
+  const payType = document.getElementById('manualPayType').value;
+
+  const reg = {
+    name, phone,
+    workshop:     w.artist,
+    style:        w.style||'',
+    package:      pkg,
+    slots:        slot ? slot.date+' · '+slot.time : '—',
+    amount_paid:  amount,
+    payment_type: payType,
+    payment_id:   'MANUAL-'+Date.now(),
+    timestamp:    new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}),
+  };
+
+  await addDoc(collection(db,'registrations'), reg);
+
+  // Also decrease spots
+  if(slot){
+    const idx = w.slots.findIndex(s=>s.id===slotId);
+    if(idx>-1 && w.slots[idx].spots>0) w.slots[idx].spots--;
+    await setDoc(doc(db,'workshops',manualWsId), w);
+  }
+
+  closeModal('manualModal');
+  showToast('Student added manually ✓');
+};
+
+/* ══════════════════════════════════════
+   REGISTRATIONS TABLE
+══════════════════════════════════════ */
+function renderRegTable(){
+  const tbody = document.getElementById('regTable');
+  let data    = [...registrations];
+  if(currentRegFilter&&currentRegFilter!=='all') data = data.filter(r=>r.workshop===currentRegFilter);
+  if(regSearchQ) data = data.filter(r=>
+    (r.name||'').toLowerCase().includes(regSearchQ.toLowerCase()) ||
+    (r.phone||'').includes(regSearchQ)
+  );
+  tbody.innerHTML = data.length
+    ? data.map(r=>`<tr>
+        <td style="color:var(--text)">${r.name||'—'}</td>
+        <td>${r.phone||'—'}</td>
+        <td>${r.workshop||'—'}</td>
+        <td>${r.package||'—'}</td>
+        <td style="font-size:0.75rem">${r.slots||'—'}</td>
+        <td style="font-size:0.75rem;color:var(--yellow)">${getSongForReg(r)}</td>
+        <td style="color:var(--yellow)">₹${parseFloat(r.amount_paid||0).toLocaleString('en-IN')}</td>
+        <td>${payTypePill(r.payment_type)}</td>
+        <td style="font-size:0.72rem;color:var(--muted)">${r.payment_id||'—'}</td>
+        <td style="font-size:0.72rem;color:var(--muted)">${r.timestamp||'—'}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteRegistration('${r.id}','${(r.name||'').replace(/'/g,"\\'")}')">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete
+        </button></td>
+      </tr>`).join('')
+    : '<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:3rem">No registrations found</td></tr>';
+}
+
+window.filterRegs = function(f,el){
+  currentRegFilter=f;
+  document.querySelectorAll('#regFilters .filter-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderRegTable();
+};
+
+window.searchRegs = function(q){ regSearchQ=q; renderRegTable(); };
+
+function updateRegFilters(){
+  const names = [...new Set(workshops.map(w=>w.artist))];
+  document.getElementById('regFilters').innerHTML =
+    `<button class="filter-tab active" onclick="filterRegs('all',this)">All</button>`
+    + names.map(n=>`<button class="filter-tab" onclick="filterRegs('${n}',this)">${n}</button>`).join('');
+}
+
+function updateRegBadge(){
+  document.getElementById('regBadge').textContent = registrations.length;
+}
+
+// Find song for a registration by matching workshop + slot date
+function getSongForReg(r){
+  const w = workshops.find(x=>x.artist===r.workshop);
+  if(!w) return '—';
+  const slot = (w.slots||[]).find(s=>(r.slots||'').includes(s.date));
+  return slot?.song || '—';
+}
+
+/* ══════════════════════════════════════
+   DELETE REGISTRATION (password protected)
+══════════════════════════════════════ */
+const DELETE_PASSWORD = 'delete2025'; // ← change this password
+
+window.deleteRegistration = async function(regId, regName){
+  const pass = prompt(`Enter admin password to delete registration for "${regName}":`);
+  if(pass === null) return; // cancelled
+  if(pass !== DELETE_PASSWORD){
+    showToast('Incorrect password — deletion cancelled','error');
+    return;
+  }
+  const confirm = window.confirm(`Are you sure you want to delete ${regName}'s registration? This cannot be undone.`);
+  if(!confirm) return;
+  try {
+    await deleteDoc(doc(db,'registrations',regId));
+    showToast(`${regName}'s registration deleted`);
+  } catch(e) {
+    showToast('Failed to delete — try again','error');
+  }
+};
+
+/* ══════════════════════════════════════
+   PAYMENTS
+══════════════════════════════════════ */
+function renderPayTable(search=''){
+  let data   = [...registrations];
+  if(search) data = data.filter(r=>(r.payment_id||'').toLowerCase().includes(search.toLowerCase()));
+  const rev  = registrations.reduce((s,r)=>s+parseFloat(r.amount_paid||0),0);
+  const avg  = registrations.length ? Math.round(rev/registrations.length) : 0;
+  const online = registrations.filter(r=>!r.payment_type||r.payment_type==='Online').length;
+  const manual = registrations.filter(r=>r.payment_type&&r.payment_type!=='Online').length;
+
+  document.getElementById('paymentStats').innerHTML = `
+    <div class="stat-card"><p class="stat-label">Total Revenue</p><p class="stat-val green">₹${rev.toLocaleString('en-IN')}</p></div>
+    <div class="stat-card"><p class="stat-label">Transactions</p><p class="stat-val">${registrations.length}</p></div>
+    <div class="stat-card"><p class="stat-label">Avg. Transaction</p><p class="stat-val yellow">₹${avg.toLocaleString('en-IN')}</p></div>
+    <div class="stat-card"><p class="stat-label">Online / Manual</p><p class="stat-val">${online}<span style="font-size:1rem;color:var(--muted)"> / ${manual}</span></p></div>
+  `;
+
+  document.getElementById('payTable').innerHTML = data.length
+    ? data.map(r=>`<tr>
+        <td style="font-family:monospace;font-size:0.75rem;color:var(--muted)">${r.payment_id||'—'}</td>
+        <td style="color:var(--text)">${r.name||'—'}</td>
+        <td>${r.workshop||'—'}</td>
+        <td style="color:var(--yellow);font-weight:500">₹${parseFloat(r.amount_paid||0).toLocaleString('en-IN')}</td>
+        <td>${payTypePill(r.payment_type)}</td>
+        <td style="font-size:0.75rem;color:var(--muted)">${r.timestamp||'—'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:3rem">No payments yet</td></tr>';
+}
+
+window.searchPayments = function(q){ renderPayTable(q); };
+
+window.exportCSV = function(){
+  if(!registrations.length){ showToast('No registrations to export','error'); return; }
+  const headers = ['Timestamp','Name','Phone','Workshop','Package','Slots','Amount Paid','Payment Type','Payment ID'];
+  const rows    = registrations.map(r=>[r.timestamp||'',r.name||'',r.phone||'',r.workshop||'',r.package||'',r.slots||'',r.amount_paid||0,r.payment_type||'Online',r.payment_id||'']);
+  const csv  = [headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = 'registrations-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  showToast('CSV downloaded!');
+};
+
+window.publishToWebsite = async function(){
+  if(!workshops.length){ showToast('No workshops to publish','error'); return; }
+  showToast('Fetching latest page…');
+  const toPublish = workshops.filter(w=>w.status!=='completed'&&w.status!=='cancelled');
+  try {
+    const res  = await fetch('https://thehappeningspace.in/workshop-detail.html');
+    let html   = await res.text();
+    const data = JSON.stringify(toPublish,null,2);
+    const rgx  = /const WORKSHOPS_DATA = \[[\s\S]*?\];/;
+    if(!rgx.test(html)){ showToast('Cannot find data section','error'); return; }
+    const updated = html.replace(rgx,'const WORKSHOPS_DATA = '+data+';');
+    const blob    = new Blob([updated],{type:'text/html'});
+    const a       = document.createElement('a');
+    a.href        = URL.createObjectURL(blob);
+    a.download    = 'workshop-detail.html';
+    a.click();
+    showToast('Downloaded! Replace in folder and upload to Netlify.');
+  } catch(e){ showToast('Could not fetch page. Try again.','error'); }
+};
+
+window.openModal  = function(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; };
+window.closeModal = function(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; };
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.querySelectorAll('.modal-backdrop.open,.confirm-backdrop.open').forEach(m=>m.classList.remove('open'));
+    document.body.style.overflow='';
+  }
+});
+
+let toastTimer;
+window.showToast = function(msg,type='success'){
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.className = 'toast show '+(type==='error'?'error':'success');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'),3500);
+};
+
+document.addEventListener('DOMContentLoaded',()=>{
+  if(sessionStorage.getItem('ths_auth')==='1') initApp();
+});
+</script>
+
+<!-- PRINT — outside module so onclick works -->
+<script>
+function printSlot(wsId, slotId){
+  // Get data from global state set by module
+  const w    = (window._workshops||[]).find(x=>x.id===wsId);
+  const regs = (window._registrations||[]);
+  if(!w){ alert('Workshop data not loaded yet. Please wait a moment and try again.'); return; }
+  const slot = (w.slots||[]).find(s=>s.id===slotId);
+  if(!slot){ alert('Slot not found.'); return; }
+
+  const slotRegs = regs
+    .filter(r => r.workshop===w.artist && (r.slots||'').includes(slot.date))
+    .sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+
+  const PER_PAGE = 25;
+
+  const buildCol = (list, startIdx) => {
+    if(!list.length) return '<div style="flex:1"></div>';
+    return `<div style="flex:1;min-width:0">
+      <div style="display:grid;grid-template-columns:28px 1fr auto;font-size:11pt;font-weight:700;text-transform:uppercase;color:#555;border-bottom:2px solid #000;padding-bottom:5px;margin-bottom:4px">
+        <span>#</span><span>Name</span><span>Phone</span>
+      </div>
+      ${list.map((r,i)=>`
+        <div style="display:grid;grid-template-columns:28px 1fr auto;padding:5px 0;border-bottom:1px solid #ccc;font-size:14pt">
+          <span style="color:#aaa;font-size:10pt">${startIdx+i+1}</span>
+          <span style="font-weight:500;color:#000;padding-right:8px">${r.name||'—'}${r.payment_type&&r.payment_type!=='Online'?` <span style="font-size:9pt;color:#888">(${r.payment_type})</span>`:''}</span>
+          <span style="color:#111;font-size:13pt;white-space:nowrap">${r.phone||'—'}</span>
+        </div>`).join('')}
+    </div>`;
+  };
+
+  const pages=[];
+  for(let i=0;i<Math.max(slotRegs.length,1);i+=PER_PAGE) pages.push(slotRegs.slice(i,i+PER_PAGE));
+
+  const pagesHTML = pages.map((pg,pi)=>{
+    const half=Math.ceil(pg.length/2);
+    return `<div style="${pi>0?'page-break-before:always;padding-top:20px':''}">
+      ${pi===0?`<div style="border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:14px">
+        <div style="font-size:12pt;color:#555;margin-bottom:3px">The Happening Space · 311 International Wealth Center, VIP Road, Surat</div>
+        <div style="font-size:28pt;font-weight:700;color:#000;margin-bottom:2px">${w.artist}</div>
+        <div style="font-size:14pt;color:#333;margin-bottom:2px">${w.style||''}</div>
+        <div style="font-size:14pt;color:#333;margin-bottom:2px">${slot.date} · ${slot.time}${slot.song?' · ♪ '+slot.song:''}</div>
+        <div style="font-size:12pt;color:#666;margin-top:5px">
+          Registered: <b>${slotRegs.length}</b> &nbsp;|&nbsp;
+          Total Spots: <b>${slot.totalSpots||'—'}</b> &nbsp;|&nbsp;
+          Remaining: <b>${slot.spots||'—'}</b>
+          ${pages.length>1?` &nbsp;|&nbsp; Page ${pi+1}/${pages.length}`:''}
+        </div>
+      </div>`:`<div style="font-size:11pt;color:#555;margin-bottom:8px;border-bottom:1px solid #ccc;padding-bottom:4px">${w.artist} · ${slot.date} · ${slot.time} — Page ${pi+1}/${pages.length}</div>`}
+      <div style="display:flex;gap:20px">
+        ${buildCol(pg.slice(0,half), pi*PER_PAGE)}
+        ${buildCol(pg.slice(half), pi*PER_PAGE+half)}
+      </div>
+      ${pi===pages.length-1?`<div style="margin-top:14px;font-size:8pt;color:#888;border-top:1px solid #ddd;padding-top:5px;display:flex;justify-content:space-between">
+        <span>Printed: ${new Date().toLocaleString('en-IN')}</span><span>The Happening Space</span>
+      </div>`:''}
+    </div>`;
+  }).join('');
+
+  const emptyHTML = `
+    <div style="border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:14px">
+      <div style="font-size:8.5pt;color:#555">The Happening Space</div>
+      <div style="font-size:20pt;font-weight:700;color:#000">${w.artist}</div>
+      <div style="font-size:10pt;color:#333">${slot.date} · ${slot.time}${slot.song?' · ♪ '+slot.song:''}</div>
+    </div>
+    <p style="color:#999;text-align:center;margin-top:40px;font-size:11pt">No registrations for this slot yet.</p>
+    <div style="margin-top:14px;font-size:8pt;color:#888;border-top:1px solid #ddd;padding-top:5px;display:flex;justify-content:space-between">
+      <span>Printed: ${new Date().toLocaleString('en-IN')}</span><span>The Happening Space</span>
+    </div>`;
+
+  const existing = document.getElementById('printFrame');
+  if(existing) existing.remove();
+
+  const iframe = document.createElement('iframe');
+  iframe.id = 'printFrame';
+  iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:99999;background:white';
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument || iframe.contentWindow.document;
+  doc.open();
+  doc.write(`<!DOCTYPE html><html><head>
+    <meta charset="UTF-8">
+    <title>${w.artist} – ${slot.date}</title>
+    <style>
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;padding:1.5cm}
+      @page{size:A4 portrait;margin:1.5cm}
+      @media print{body{padding:0}}
+    </style>
+  </head><body>
+    ${slotRegs.length ? pagesHTML : emptyHTML}
+    <script>
+      window.onload = function(){
+        window.print();
+        window.onafterprint = function(){ parent.document.getElementById('printFrame').remove(); };
+        setTimeout(function(){ try{parent.document.getElementById('printFrame').remove();}catch(e){} }, 3000);
+      };
+    <\/script>
+  </body></html>`);
+  doc.close();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Edit — The Happening Space Website</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0a;color:#f5f5f0;font-family:'DM Sans',sans-serif;font-weight:300;line-height:1.7;padding:2rem}
+.page{max-width:820px;margin:0 auto;padding:3rem 0 6rem}
+h1{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:0.04em;color:#f5f5f0;margin-bottom:0.25rem}
+h1 span{color:#bc1f2e}
+.subtitle{color:rgba(245,245,240,0.5);font-size:0.9rem;margin-bottom:3rem;letter-spacing:0.05em}
+h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.04em;color:#f5f5f0;margin:3rem 0 1rem;display:flex;align-items:center;gap:0.75rem}
+h2 .num{background:#bc1f2e;color:#fff;font-size:0.9rem;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Syne',sans-serif;font-weight:700}
+h3{font-size:1rem;font-weight:600;color:#f5f5f0;margin:1.75rem 0 0.6rem;font-family:'Syne',sans-serif}
+p{color:rgba(245,245,240,0.65);margin-bottom:0.85rem;font-size:0.92rem}
+.divider{height:1px;background:rgba(255,255,255,0.08);margin:2.5rem 0}
+.file-box{background:#161616;border:1px solid rgba(255,255,255,0.08);border-left:3px solid #bc1f2e;padding:1.25rem 1.5rem;margin:1rem 0 1.5rem;border-radius:2px}
+.file-box .file-name{font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;color:#bc1f2e;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem}
+.file-box p{margin:0;font-size:0.88rem}
+code{background:#1e1e1e;border:1px solid rgba(255,255,255,0.1);color:#f5e642;padding:0.15rem 0.5rem;font-family:monospace;font-size:0.85rem;border-radius:2px}
+.code-block{background:#111;border:1px solid rgba(255,255,255,0.1);padding:1.25rem 1.5rem;margin:0.75rem 0 1.25rem;overflow-x:auto}
+.code-block pre{font-family:monospace;font-size:0.82rem;color:#f5f5f0;line-height:1.8;white-space:pre}
+.code-block .comment{color:rgba(245,245,240,0.35)}
+.code-block .key{color:#bc1f2e}
+.code-block .val{color:#f5e642}
+.code-block .str{color:#6aaf7e}
+.step{display:flex;gap:1rem;margin:0.75rem 0;align-items:flex-start}
+.step-num{background:#bc1f2e;color:#fff;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;margin-top:2px;font-family:'Syne',sans-serif}
+.step p{margin:0;font-size:0.9rem;color:rgba(245,245,240,0.7)}
+.step p strong{color:#f5f5f0;font-weight:500}
+.tip{background:rgba(245,230,66,0.06);border:1px solid rgba(245,230,66,0.2);padding:1rem 1.25rem;margin:1rem 0;border-radius:2px}
+.tip strong{color:#f5e642;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:0.35rem;font-family:'Syne',sans-serif}
+.tip p{margin:0;font-size:0.85rem;color:rgba(245,245,240,0.65)}
+.warning{background:rgba(188,31,46,0.08);border:1px solid rgba(188,31,46,0.3);padding:1rem 1.25rem;margin:1rem 0;border-radius:2px}
+.warning strong{color:#bc1f2e;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:0.35rem;font-family:'Syne',sans-serif}
+.warning p{margin:0;font-size:0.85rem;color:rgba(245,245,240,0.65)}
+table{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem;font-size:0.85rem}
+th{text-align:left;padding:0.6rem 1rem;background:#161616;color:rgba(245,245,240,0.5);font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;font-family:'Syne',sans-serif;border-bottom:1px solid rgba(255,255,255,0.08)}
+td{padding:0.75rem 1rem;border-bottom:1px solid rgba(255,255,255,0.05);color:rgba(245,245,240,0.7);vertical-align:top}
+td:first-child{color:#f5f5f0;font-weight:500;white-space:nowrap}
+.toc{background:#111;border:1px solid rgba(255,255,255,0.08);padding:1.5rem 2rem;margin-bottom:3rem}
+.toc-title{font-family:'Syne',sans-serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(245,245,240,0.4);margin-bottom:1rem}
+.toc a{display:block;color:rgba(245,245,240,0.6);text-decoration:none;font-size:0.88rem;padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.04);transition:color 0.2s}
+.toc a:hover{color:#bc1f2e}
+.toc a span{color:#bc1f2e;margin-right:0.75rem;font-family:monospace}
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>How to <span>Edit</span></h1>
+<p class="subtitle">The Happening Space Website — Complete Editing Guide</p>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <p class="toc-title">Contents</p>
+  <a href="#software"><span>01</span> What software do I need?</a>
+  <a href="#files"><span>02</span> Understanding your files</a>
+  <a href="#workshops"><span>03</span> Adding / editing workshops</a>
+  <a href="#homepage"><span>04</span> Editing the homepage</a>
+  <a href="#photos"><span>05</span> Adding real photos</a>
+  <a href="#razorpay"><span>06</span> Setting up Razorpay</a>
+  <a href="#sheets"><span>07</span> Setting up Google Sheets</a>
+  <a href="#netlify"><span>08</span> Going live on Netlify</a>
+  <a href="#updates"><span>09</span> Updating the site after going live</a>
+</div>
+
+<!-- 01 -->
+<h2 id="software"><span class="num">1</span> What software do I need?</h2>
+<p>You only need one free tool to edit these files:</p>
+<div class="step"><div class="step-num">→</div><p>Download <strong>Visual Studio Code</strong> from code.visualstudio.com — it's free, works on Windows and Mac, and is the industry standard for editing websites.</p></div>
+<div class="step"><div class="step-num">→</div><p>Once installed, go to File → Open Folder → select your website folder. All your files appear in the left panel.</p></div>
+<div class="step"><div class="step-num">→</div><p>To preview, just double-click any HTML file and it opens in your browser.</p></div>
+<div class="tip"><strong>Tip</strong><p>Install the "Prettier" extension in VS Code — it auto-formats your code so it stays clean and readable.</p></div>
+
+<div class="divider"></div>
+
+<!-- 02 -->
+<h2 id="files"><span class="num">2</span> Understanding your files</h2>
+<table>
+  <tr><th>File</th><th>What it is</th></tr>
+  <tr><td>index.html</td><td>Homepage — the first page people see</td></tr>
+  <tr><td>workshop-detail.html</td><td>Workshop enrollment page — works for ALL artists via the URL</td></tr>
+  <tr><td>HOW-TO-EDIT.html</td><td>This guide — keep it, don't upload it to the live site</td></tr>
+</table>
+<p>Every file is a single HTML file. All the styling (colours, fonts, layout) and logic (buttons, payments) live inside the same file — you don't need separate CSS or JavaScript files.</p>
+
+<div class="divider"></div>
+
+<!-- 03 -->
+<h2 id="workshops"><span class="num">3</span> Adding / editing workshops</h2>
+<p>All workshop data lives in <code>workshop-detail.html</code>. Open it in VS Code and search for <code>const WORKSHOPS</code> — you'll find a block that looks like this:</p>
+
+<div class="code-block"><pre><span class="key">const</span> WORKSHOPS = {
+  <span class="str">'heet-samani'</span>: {
+    <span class="key">artist</span>: <span class="val">'Heet Samani'</span>,          <span class="comment">← Artist name shown on page</span>
+    <span class="key">initials</span>: <span class="val">'HS'</span>,              <span class="comment">← Shows in bio avatar circle</span>
+    <span class="key">style</span>: <span class="val">'Hip-Hop · Breaking'</span>,   <span class="comment">← Dance style shown below name</span>
+    <span class="key">posterBg</span>: <span class="val">'linear-gradient(...)'</span>, <span class="comment">← Poster colour (replace with image later)</span>
+    <span class="key">bio</span>: <span class="val">'Artist bio text here...'</span>, <span class="comment">← Bio paragraph</span>
+    <span class="key">desc</span>: <span class="val">'Workshop description...'</span>, <span class="comment">← Workshop description</span>
+    <span class="key">packages</span>: [                    <span class="comment">← Pricing options</span>
+      { <span class="key">id</span>: <span class="val">'p1'</span>, <span class="key">name</span>: <span class="val">'Single Session'</span>, <span class="key">desc</span>: <span class="val">'1 class'</span>, <span class="key">price</span>: <span class="val">900</span>, <span class="key">badge</span>: <span class="val">null</span> },
+      { <span class="key">id</span>: <span class="val">'p2'</span>, <span class="key">name</span>: <span class="val">'Double Session'</span>, <span class="key">desc</span>: <span class="val">'2 classes'</span>, <span class="key">price</span>: <span class="val">1600</span>, <span class="key">badge</span>: <span class="val">'Best Value'</span> },
+    ],
+    <span class="key">slots</span>: [                       <span class="comment">← Class dates to pick from</span>
+      { <span class="key">id</span>: <span class="val">'s1'</span>, <span class="key">date</span>: <span class="val">'Saturday, 7 Jun 2025'</span>, <span class="key">time</span>: <span class="val">'11:00 AM – 1:00 PM'</span>, <span class="key">spots</span>: <span class="val">6</span> },
+    ],
+  },
+};</pre></div>
+
+<h3>To change a price</h3>
+<p>Find the artist, find their package, change the <code>price</code> number. Example: change <code>price: 900</code> to <code>price: 1000</code>. Save the file.</p>
+
+<h3>To add a new date / slot</h3>
+<p>Add a new line inside <code>slots: [ ]</code>:</p>
+<div class="code-block"><pre>{ <span class="key">id</span>: <span class="val">'s3'</span>, <span class="key">date</span>: <span class="val">'Saturday, 21 Jun 2025'</span>, <span class="key">time</span>: <span class="val">'11:00 AM – 1:00 PM'</span>, <span class="key">spots</span>: <span class="val">20</span> },</pre></div>
+<div class="warning"><strong>Important</strong><p>Every slot needs a unique id — s1, s2, s3, s4 etc. Don't repeat the same id.</p></div>
+
+<h3>To add a new package / pricing tier</h3>
+<p>Add a new line inside <code>packages: [ ]</code>:</p>
+<div class="code-block"><pre>{ <span class="key">id</span>: <span class="val">'p3'</span>, <span class="key">name</span>: <span class="val">'Full Intensive'</span>, <span class="key">desc</span>: <span class="val">'3 classes + recording'</span>, <span class="key">price</span>: <span class="val">2200</span>, <span class="key">badge</span>: <span class="val">null</span> },</pre></div>
+<p>Set <code>badge</code> to <code>'Best Value'</code> or <code>'Popular'</code> to show a label, or <code>null</code> for no label.</p>
+
+<h3>To add a brand new artist / workshop</h3>
+<div class="step"><div class="step-num">1</div><p>Copy an entire existing artist block (from <code>'heet-samani': {</code> to its closing <code>},</code>)</p></div>
+<div class="step"><div class="step-num">2</div><p>Paste it after the last artist, before the closing <code>};</code></p></div>
+<div class="step"><div class="step-num">3</div><p>Change the key from <code>'heet-samani'</code> to something like <code>'new-artist'</code> (no spaces, lowercase, hyphens)</p></div>
+<div class="step"><div class="step-num">4</div><p>Update all the fields — artist name, style, bio, packages, slots</p></div>
+<div class="step"><div class="step-num">5</div><p>Add a card on the homepage linking to <code>workshop-detail.html?id=new-artist</code></p></div>
+
+<div class="divider"></div>
+
+<!-- 04 -->
+<h2 id="homepage"><span class="num">4</span> Editing the homepage</h2>
+<p>Open <code>index.html</code>. The main things you'll want to edit:</p>
+
+<h3>Workshop cards</h3>
+<p>Search for <code>&lt;!-- WORKSHOP 1 — Heet Samani --&gt;</code>. Each card looks like this:</p>
+<div class="code-block"><pre>&lt;<span class="key">div</span> class=<span class="val">"workshop-card"</span>&gt;
+  &lt;<span class="key">div</span> class=<span class="val">"card-poster-label"</span>&gt;
+    &lt;<span class="key">p</span> class=<span class="val">"card-artist"</span>&gt;<span class="str">Heet Samani</span>&lt;/<span class="key">p</span>&gt;   <span class="comment">← Change name here</span>
+    &lt;<span class="key">p</span> class=<span class="val">"card-style"</span>&gt;<span class="str">Hip-Hop · Breaking</span>&lt;/<span class="key">p</span>&gt;  <span class="comment">← Change style here</span>
+  &lt;/<span class="key">div</span>&gt;
+  &lt;<span class="key">span</span> class=<span class="val">"card-date"</span>&gt;<span class="str">Add Date · Add Time</span>&lt;/<span class="key">span</span>&gt;  <span class="comment">← Add real date</span>
+  &lt;<span class="key">span</span> class=<span class="val">"card-price"</span>&gt;<span class="str">₹XXX</span>&lt;/<span class="key">span</span>&gt;              <span class="comment">← Add real price</span>
+&lt;/<span class="key">div</span>&gt;</pre></div>
+
+<h3>Studio stats</h3>
+<p>Search for <code>class="stat-num"</code> — you'll find 4 stat boxes. Change the numbers and labels to match your real data.</p>
+
+<h3>Footer contact details</h3>
+<p>Search for <code>Add WhatsApp</code>, <code>Add Email</code>, <code>Add Instagram</code> — replace these with your real links:</p>
+<div class="code-block"><pre>&lt;<span class="key">a</span> href=<span class="val">"https://wa.me/919876543210"</span>&gt;WhatsApp&lt;/<span class="key">a</span>&gt;
+&lt;<span class="key">a</span> href=<span class="val">"mailto:hello@thehappeningspace.in"</span>&gt;Email&lt;/<span class="key">a</span>&gt;
+&lt;<span class="key">a</span> href=<span class="val">"https://instagram.com/thehappeningspace"</span>&gt;Instagram&lt;/<span class="key">a</span>&gt;</pre></div>
+
+<div class="divider"></div>
+
+<!-- 05 -->
+<h2 id="photos"><span class="num">5</span> Adding real photos</h2>
+
+<h3>Workshop poster images</h3>
+<p>In <code>workshop-detail.html</code>, find the artist you want to update and change <code>posterBg</code> from a gradient to an image:</p>
+<div class="code-block"><pre><span class="comment">// Before (placeholder gradient):</span>
+<span class="key">posterBg</span>: <span class="val">'linear-gradient(145deg,#1a0407,#bc1f2e)'</span>,
+
+<span class="comment">// After (real image):</span>
+<span class="key">posterBg</span>: <span class="val">'url(images/heet-samani-poster.jpg) center/cover no-repeat'</span>,</pre></div>
+<p>Put your images in a folder called <code>images</code> inside your website folder.</p>
+
+<h3>Photo strip on homepage</h3>
+<p>In <code>index.html</code>, search for <code>class="strip-photo"</code>. Replace the placeholder divs with real images:</p>
+<div class="code-block"><pre><span class="comment">// Before:</span>
+&lt;<span class="key">div</span> class=<span class="val">"strip-photo"</span>&gt;&lt;<span class="key">div</span> class=<span class="val">"ph"</span> style=<span class="val">"background:..."</span>&gt;Add Your Photo&lt;/<span class="key">div</span>&gt;&lt;/<span class="key">div</span>&gt;
+
+<span class="comment">// After:</span>
+&lt;<span class="key">div</span> class=<span class="val">"strip-photo"</span>&gt;&lt;<span class="key">img</span> src=<span class="val">"images/studio-1.jpg"</span> style=<span class="val">"width:100%;height:100%;object-fit:cover"</span>&gt;&lt;/<span class="key">div</span>&gt;</pre></div>
+<div class="tip"><strong>Tip — Image sizes</strong><p>Poster images: 600×800px minimum. Strip photos: 560×380px minimum. Compress all images at tinypng.com before uploading — keeps the site fast.</p></div>
+
+<div class="divider"></div>
+
+<!-- 06 -->
+<h2 id="razorpay"><span class="num">6</span> Setting up Razorpay</h2>
+<div class="step"><div class="step-num">1</div><p>Go to <strong>razorpay.com</strong> → Sign up with your studio's details</p></div>
+<div class="step"><div class="step-num">2</div><p>Complete KYC — add your bank account (this is where payments land)</p></div>
+<div class="step"><div class="step-num">3</div><p>Dashboard → Settings → API Keys → Generate Live Key</p></div>
+<div class="step"><div class="step-num">4</div><p>Copy the Key ID (starts with <code>rzp_live_</code>)</p></div>
+<div class="step"><div class="step-num">5</div><p>Open <code>workshop-detail.html</code> → find <code>const RAZORPAY_KEY</code> → paste your key</p></div>
+<div class="code-block"><pre><span class="key">const</span> RAZORPAY_KEY = <span class="val">'rzp_live_YourActualKeyHere'</span>;</pre></div>
+<div class="warning"><strong>Never share this key</strong><p>Don't post it publicly or share the file with this key filled in. Keep it private.</p></div>
+
+<div class="divider"></div>
+
+<!-- 07 -->
+<h2 id="sheets"><span class="num">7</span> Setting up Google Sheets auto-logging</h2>
+<p>Every successful payment will automatically add a row to your Google Sheet.</p>
+
+<div class="step"><div class="step-num">1</div><p>Create a new Google Sheet. Name the columns in Row 1 exactly as:<br><code>Timestamp | Name | Phone | Workshop | Style | Package | Slots | Amount Paid | Payment ID | Order ID</code></p></div>
+<div class="step"><div class="step-num">2</div><p>In the sheet, go to <strong>Extensions → Apps Script</strong></p></div>
+<div class="step"><div class="step-num">3</div><p>Delete everything in the editor and paste this code:</p></div>
+
+<div class="code-block"><pre><span class="key">function</span> doPost(e) {
+  <span class="key">const</span> sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  <span class="key">const</span> data  = JSON.parse(e.postData.contents);
+  sheet.appendRow([
+    data.timestamp, data.name, data.phone,
+    data.workshop,  data.style, data.package,
+    data.slots,     data.amount_paid,
+    data.payment_id, data.order_id,
+  ]);
+  <span class="key">return</span> ContentService
+    .createTextOutput(JSON.stringify({ status: <span class="val">'ok'</span> }))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre></div>
+
+<div class="step"><div class="step-num">4</div><p>Click <strong>Deploy → New Deployment</strong><br>— Type: <strong>Web App</strong><br>— Execute as: <strong>Me</strong><br>— Who has access: <strong>Anyone</strong></p></div>
+<div class="step"><div class="step-num">5</div><p>Click Deploy → copy the <strong>Web App URL</strong></p></div>
+<div class="step"><div class="step-num">6</div><p>Open <code>workshop-detail.html</code> → find <code>const SHEETS_URL</code> → paste the URL</p></div>
+<div class="code-block"><pre><span class="key">const</span> SHEETS_URL = <span class="val">'https://script.google.com/macros/s/YourScriptId/exec'</span>;</pre></div>
+
+<div class="divider"></div>
+
+<!-- 08 -->
+<h2 id="netlify"><span class="num">8</span> Going live on Netlify</h2>
+<div class="step"><div class="step-num">1</div><p>Make sure your folder contains: <code>index.html</code>, <code>workshop-detail.html</code>, and your <code>images/</code> folder</p></div>
+<div class="step"><div class="step-num">2</div><p>Go to <strong>netlify.com/drop</strong></p></div>
+<div class="step"><div class="step-num">3</div><p>Drag your entire website folder onto the page</p></div>
+<div class="step"><div class="step-num">4</div><p>In 30 seconds you get a live URL like <code>random-name-abc123.netlify.app</code></p></div>
+<div class="step"><div class="step-num">5</div><p>To change the URL: Netlify Dashboard → Site Settings → Change site name → set it to <code>thehappeningspace</code></p></div>
+<div class="tip"><strong>Custom domain (optional)</strong><p>Buy <code>thehappeningspace.in</code> from GoDaddy (~₹800/year). In Netlify → Domain Settings → Add custom domain → follow the steps. Takes about 10 minutes.</p></div>
+
+<div class="divider"></div>
+
+<!-- 09 -->
+<h2 id="updates"><span class="num">9</span> Updating the site after going live</h2>
+<p>Every time you edit a file and want to update the live site:</p>
+<div class="step"><div class="step-num">1</div><p>Make your changes in VS Code and save the file</p></div>
+<div class="step"><div class="step-num">2</div><p>Go to your Netlify dashboard → <strong>Deploys</strong> tab</p></div>
+<div class="step"><div class="step-num">3</div><p>Drag your updated folder onto the deploy dropzone</p></div>
+<div class="step"><div class="step-num">4</div><p>Site updates in under 30 seconds — live immediately</p></div>
+
+<div class="tip"><strong>Weekly workshop update routine</strong><p>Every week: open workshop-detail.html → update slot dates → update spots count → save → drag to Netlify. Takes 5 minutes max.</p></div>
+
+<div class="divider"></div>
+
+<p style="text-align:center;color:rgba(245,245,240,0.3);font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;margin-top:3rem">The Happening Space · Website Guide · Built with Claude</p>
+
+</div>
+</body>
+</html>

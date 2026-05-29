@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop — The Happening Space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{cursor:none!important}
+:root{
+  --red:#bc1f2e;--red-dark:#8f1520;--red-dim:rgba(188,31,46,0.1);
+  --black:#0a0a0a;--off-black:#111;--card-bg:#161616;
+  --border:rgba(255,255,255,0.08);--border-red:rgba(188,31,46,0.4);
+  --text:#f5f5f0;--text-muted:rgba(245,245,240,0.45);--text-mid:rgba(245,245,240,0.7);
+  --yellow:#f5e642;--green:#6aaf7e;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--text);font-family:'Syne',sans-serif;overflow-x:hidden}
+.cursor{position:fixed;width:12px;height:12px;background:var(--red);border-radius:50%;pointer-events:none;z-index:99999;top:0;left:0;transform:translate(-50%,-50%);transition:opacity 0.2s}
+.cursor-ring{position:fixed;width:38px;height:38px;border:2px solid rgba(188,31,46,0.75);border-radius:50%;pointer-events:none;z-index:99998;top:0;left:0;transform:translate(-50%,-50%)}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;pointer-events:all}
+.logo-box{width:36px;height:36px;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff;flex-shrink:0}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:0.1em;color:var(--text);line-height:1}
+.logo-text span{color:var(--red)}
+.hamburger{display:flex;flex-direction:column;justify-content:center;gap:6px;width:44px;height:44px;pointer-events:all;background:rgba(10,10,10,0.7);backdrop-filter:blur(10px);border:1px solid var(--border);padding:12px;z-index:300;position:relative;transition:border-color 0.3s}
+.hamburger:hover{border-color:var(--red)}
+.hamburger span{display:block;width:20px;height:1.5px;background:var(--text);transition:transform 0.35s ease,opacity 0.25s ease,width 0.3s ease;transform-origin:center}
+.hamburger.open span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;width:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+.nav-overlay{position:fixed;inset:0;z-index:250;background:rgba(10,10,10,0.97);display:flex;flex-direction:column;justify-content:center;padding:4rem 3rem;opacity:0;pointer-events:none;transition:opacity 0.4s ease;backdrop-filter:blur(20px)}
+.nav-overlay.open{opacity:1;pointer-events:all}
+.nav-overlay-label{font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--text-muted);margin-bottom:2.5rem;display:flex;align-items:center;gap:0.75rem}
+.nav-overlay-label::before{content:'';width:24px;height:1px;background:var(--text-muted)}
+.nav-overlay-links{list-style:none;display:flex;flex-direction:column;gap:0}
+.nav-overlay-links li{border-bottom:1px solid var(--border);overflow:hidden;transform:translateY(20px);opacity:0;transition:transform 0.4s ease,opacity 0.4s ease}
+.nav-overlay.open .nav-overlay-links li:nth-child(1){transform:translateY(0);opacity:1;transition-delay:0.08s}
+.nav-overlay.open .nav-overlay-links li:nth-child(2){transform:translateY(0);opacity:1;transition-delay:0.13s}
+.nav-overlay.open .nav-overlay-links li:nth-child(3){transform:translateY(0);opacity:1;transition-delay:0.18s}
+.nav-overlay.open .nav-overlay-links li:nth-child(4){transform:translateY(0);opacity:1;transition-delay:0.23s}
+.nav-overlay.open .nav-overlay-links li:nth-child(5){transform:translateY(0);opacity:1;transition-delay:0.28s}
+.nav-overlay.open .nav-overlay-links li:nth-child(6){transform:translateY(0);opacity:1;transition-delay:0.33s}
+.nav-overlay-links a{display:flex;align-items:center;justify-content:space-between;text-decoration:none;padding:1.1rem 0;font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,6vw,3.8rem);letter-spacing:0.04em;color:var(--text);transition:color 0.2s,padding-left 0.25s;line-height:1}
+.nav-overlay-links a:hover{color:var(--red);padding-left:0.75rem}
+.link-num{font-family:'Syne',sans-serif;font-size:0.7rem;letter-spacing:0.15em;color:var(--text-muted);font-weight:400;align-self:flex-start;margin-top:0.4rem}
+.nav-overlay-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:2.5rem;flex-wrap:wrap;gap:1rem}
+.nav-overlay-address{font-size:0.75rem;color:var(--text-muted);line-height:1.6;font-style:normal}
+.nav-overlay-social{display:flex;gap:0.75rem}
+.nav-social-btn{width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);text-decoration:none;font-size:0.7rem;font-weight:700;transition:border-color 0.2s,color 0.2s}
+.nav-social-btn:hover{border-color:var(--red);color:var(--red)}
+.back-link{display:block;color:var(--text-muted);text-decoration:none;font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;font-weight:500;transition:color 0.2s;padding:7rem 2rem 0}
+.back-link:hover{color:var(--red)}
+.loading-screen{min-height:60vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+.loading-spinner{width:36px;height:36px;border:2px solid rgba(188,31,46,0.2);border-top-color:var(--red);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted)}
+.poster-hero{position:relative;width:100%;height:75vh;min-height:480px;overflow:hidden;display:flex;align-items:flex-end}
+.poster-bg{position:absolute;inset:0;transition:transform 0.6s ease;background-size:cover;background-position:center}
+.poster-hero:hover .poster-bg{transform:scale(1.03)}
+.poster-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,10,1) 0%,rgba(10,10,10,0.5) 40%,rgba(10,10,10,0.1) 100%)}
+.poster-content{position:relative;z-index:2;padding:2.5rem 2rem 3rem;width:100%}
+.poster-tag{display:inline-block;background:var(--red);color:#fff;font-size:0.65rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.3rem 0.75rem;margin-bottom:1rem}
+.poster-artist{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,12vw,8rem);line-height:0.88;letter-spacing:0.02em;color:var(--text);margin-bottom:0.4rem}
+.poster-style{font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted)}
+.poster-meta-row{display:flex;gap:2rem;margin-top:1.25rem;flex-wrap:wrap}
+.poster-meta-item{display:flex;flex-direction:column;gap:0.2rem}
+.poster-meta-label{font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted)}
+.poster-meta-val{font-size:0.9rem;font-weight:500;color:var(--text)}
+.main{display:grid;grid-template-columns:1fr 420px;gap:3rem;padding:3rem 2rem 6rem;max-width:1200px;margin:0 auto;align-items:start}
+.section-eyebrow{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--red);margin-bottom:0.75rem;display:flex;align-items:center;gap:0.6rem}
+.section-eyebrow::before{content:'';width:16px;height:1px;background:var(--red)}
+.details-title{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:0.04em;color:var(--text);margin-bottom:1.25rem}
+.details-desc{color:var(--text-muted);font-size:0.92rem;font-weight:300;line-height:1.8;margin-bottom:2.5rem}
+.section-heading{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.1rem}
+.section-heading-text{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:0.06em;color:var(--text)}
+.section-heading-pill{font-size:0.6rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:0.25rem 0.65rem;align-self:center;font-family:'Syne',sans-serif}
+.pill-red{background:var(--red);color:#fff}
+.pill-red-outline{background:rgba(188,31,46,0.15);border:1px solid var(--border-red);color:var(--red)}
+.packages{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:2rem}
+.package-opt{border:1px solid var(--border);padding:1.1rem 1.25rem;transition:border-color 0.2s,background 0.2s;position:relative;display:flex;align-items:center;gap:1rem}
+.package-opt:hover{border-color:rgba(255,255,255,0.2)}
+.package-opt.selected{border-color:var(--red);background:var(--red-dim)}
+.pkg-radio{width:18px;height:18px;border:1px solid rgba(255,255,255,0.3);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color 0.2s}
+.package-opt.selected .pkg-radio{border-color:var(--red)}
+.pkg-radio::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--red);opacity:0;transition:opacity 0.2s}
+.package-opt.selected .pkg-radio::after{opacity:1}
+.pkg-info{flex:1}
+.pkg-name{font-size:0.9rem;font-weight:600;color:var(--text)}
+.pkg-price{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--yellow);letter-spacing:0.04em;white-space:nowrap}
+.pkg-badge{position:absolute;top:-1px;right:1rem;background:var(--yellow);color:#0a0a0a;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem}
+.schedule-slots{display:flex;flex-direction:column;gap:0.6rem;margin-bottom:2.5rem}
+.slot-opt{border:1px solid var(--border);padding:0.9rem 1.25rem;transition:border-color 0.2s,background 0.2s;display:flex;align-items:center;gap:1rem}
+.slot-opt:hover{border-color:rgba(255,255,255,0.2)}
+.slot-opt.selected{border-color:var(--red);background:var(--red-dim)}
+.slot-radio{width:16px;height:16px;border:1px solid rgba(255,255,255,0.3);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color 0.2s}
+.slot-opt.selected .slot-radio{border-color:var(--red)}
+.slot-radio::after{content:'';width:7px;height:7px;border-radius:50%;background:var(--red);opacity:0;transition:opacity 0.2s}
+.slot-opt.selected .slot-radio::after{opacity:1}
+.slot-info{flex:1}
+.slot-date{font-size:0.88rem;font-weight:500;color:var(--text)}
+.slot-time{font-size:0.75rem;color:var(--text-muted);margin-top:0.1rem}
+.slot-song{font-size:0.72rem;color:var(--yellow);margin-top:0.15rem;letter-spacing:0.03em}
+.slot-spots{font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;padding:0.25rem 0.6rem;border:1px solid var(--border-red);color:var(--red)}
+.slot-spots.low{background:rgba(188,31,46,0.1)}
+.artist-bio{border-top:1px solid var(--border);padding-top:2rem;margin-top:1rem}
+.bio-header{display:flex;align-items:center;gap:1.25rem;margin-bottom:1rem}
+.bio-avatar{width:56px;height:56px;border:1px solid var(--border-red);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--red);flex-shrink:0}
+.bio-name{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.04em;color:var(--text)}
+.bio-title{font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-top:0.1rem}
+.bio-text{font-size:0.88rem;color:var(--text-muted);font-weight:300;line-height:1.8}
+.enroll-card{background:var(--card-bg);border:1px solid var(--border);padding:2rem;position:sticky;top:6rem}
+.enroll-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.04em;color:var(--text);margin-bottom:0.25rem}
+.enroll-sub{font-size:0.78rem;color:var(--text-muted);margin-bottom:1.75rem;line-height:1.6}
+.field{margin-bottom:1.25rem}
+.field label{display:block;font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.5rem}
+.field input,.field .prefilled{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:0.75rem 1rem;color:var(--text);font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:400;outline:none;transition:border-color 0.2s;-webkit-appearance:none}
+.field input:focus{border-color:var(--red)}
+.field input::placeholder{color:var(--text-muted)}
+.field .prefilled{color:var(--text-mid);background:rgba(255,255,255,0.02);font-size:0.85rem}
+.field.has-error input{border-color:var(--red)}
+.field .err{font-size:0.72rem;color:#e57373;margin-top:0.35rem;display:none}
+.field.has-error .err{display:block}
+.form-summary{background:rgba(255,255,255,0.03);border:1px solid var(--border);padding:1rem;margin-bottom:1.5rem}
+.form-summary-row{display:flex;justify-content:space-between;font-size:0.82rem;color:var(--text-muted);padding:0.25rem 0}
+.form-summary-row.total{border-top:1px solid var(--border);margin-top:0.5rem;padding-top:0.6rem;color:var(--text);font-weight:600;font-size:0.95rem}
+.form-summary-row.total span:last-child{color:var(--yellow)}
+.form-summary-placeholder{font-size:0.8rem;color:var(--text-muted);font-style:italic}
+.enroll-btn{width:100%;background:var(--red);color:#fff;border:none;padding:1rem;font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:0.5rem}
+.enroll-btn:hover{background:var(--red-dark)}
+.enroll-btn:disabled{opacity:0.35}
+.enroll-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5}
+.form-note{font-size:0.68rem;color:var(--text-muted);text-align:center;margin-top:0.85rem;line-height:1.6}
+.popup-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:500;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(8px)}
+.popup-backdrop.open{opacity:1;pointer-events:all}
+.popup{background:var(--off-black);border:1px solid var(--border);width:100%;max-width:440px;padding:2rem;transform:translateY(20px);transition:transform 0.3s ease;position:relative}
+.popup-backdrop.open .popup{transform:translateY(0)}
+.popup-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text-muted);font-size:1.2rem;line-height:1;padding:0.25rem;transition:color 0.2s}
+.popup-close:hover{color:var(--text)}
+.popup-tag{font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--red);margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem}
+.popup-tag::before{content:'';width:14px;height:1px;background:var(--red)}
+.popup-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.04em;color:var(--text);margin-bottom:1.5rem;line-height:1}
+.popup-rows{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);margin-bottom:1.5rem}
+.popup-row{display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;border-bottom:1px solid var(--border);font-size:0.85rem}
+.popup-row:last-child{border-bottom:none}
+.popup-row span:first-child{color:var(--text-muted)}
+.popup-row span:last-child{color:var(--text);font-weight:500;text-align:right;max-width:60%}
+.popup-row.total span:first-child{font-weight:600;color:var(--text)}
+.popup-row.total span:last-child{color:var(--yellow);font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.04em}
+.popup-btns{display:grid;grid-template-columns:1fr 2fr;gap:0.75rem}
+.popup-cancel{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.85rem;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;transition:border-color 0.2s,color 0.2s}
+.popup-cancel:hover{border-color:rgba(255,255,255,0.3);color:var(--text)}
+.popup-pay{background:var(--red);border:none;color:#fff;padding:0.85rem;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:0.5rem}
+.popup-pay:hover{background:var(--red-dark)}
+.popup-pay svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5}
+.success-screen{display:none;text-align:center;padding:5rem 2rem}
+.success-screen.show{display:block}
+.success-icon{width:64px;height:64px;border:1px solid var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 2rem}
+.success-icon svg{width:28px;height:28px;stroke:var(--green);fill:none;stroke-width:2}
+.success-title{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:0.04em;color:var(--text);margin-bottom:0.5rem}
+.success-sub{font-size:0.9rem;color:var(--text-muted);line-height:1.7;max-width:360px;margin:0 auto 2.5rem}
+.success-details{background:var(--card-bg);border:1px solid var(--border);padding:1.25rem;max-width:380px;margin:0 auto 1.5rem;text-align:left}
+.success-row{display:flex;justify-content:space-between;font-size:0.82rem;padding:0.35rem 0;border-bottom:1px solid var(--border)}
+.success-row:last-child{border-bottom:none}
+.success-row span:first-child{color:var(--text-muted)}
+.success-row span:last-child{color:var(--text)}
+.success-note{font-size:0.72rem;color:var(--text-muted);letter-spacing:0.05em}
+@keyframes btnSpin{to{transform:rotate(360deg)}}
+.btn-spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:btnSpin 0.7s linear infinite;vertical-align:middle}
+@media(max-width:900px){.main{grid-template-columns:1fr;gap:2rem;padding:2rem 1.25rem 5rem}.enroll-card{position:static}*{cursor:auto!important}nav{padding:1rem 1.25rem}.back-link{padding-left:1.25rem}}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-box">TH</div>
+    <div class="logo-text">The <span>Happening</span><br>Space</div>
+  </a>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<div class="nav-overlay" id="navOverlay">
+  <div>
+    <p class="nav-overlay-label">Menu</p>
+    <ul class="nav-overlay-links">
+      <li><a href="index.html"><span>Home</span><span class="link-num">01</span></a></li>
+      <li><a href="workshops.html"><span>Workshops</span><span class="link-num">02</span></a></li>
+      <li><a href="batches.html"><span>Regular Batches</span><span class="link-num">03</span></a></li>
+      <li><a href="studio-booking.html"><span>Studio Booking</span><span class="link-num">04</span></a></li>
+      <li><a href="about.html"><span>About Us</span><span class="link-num">05</span></a></li>
+      <li><a href="contact.html"><span>Contact Us</span><span class="link-num">06</span></a></li>
+    </ul>
+    <div class="nav-overlay-bottom">
+      <address class="nav-overlay-address">311 – International Wealth Center<br>VIP Road, Surat, Gujarat</address>
+      <div class="nav-overlay-social">
+        <a href="#" class="nav-social-btn">IG</a>
+        <a href="#" class="nav-social-btn">YT</a>
+        <a href="#" class="nav-social-btn">WA</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a href="index.html" class="back-link">← Back to Home</a>
+
+<!-- LOADING -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-spinner"></div>
+  <p class="loading-text">Loading Workshop…</p>
+</div>
+
+<!-- POSTER (hidden until loaded) -->
+<div class="poster-hero" id="posterHero" style="display:none">
+  <div class="poster-bg" id="posterBg"></div>
+  <div class="poster-overlay"></div>
+  <div class="poster-content">
+    <span class="poster-tag" id="posterTag">Workshop</span>
+    <h1 class="poster-artist" id="posterArtist"></h1>
+    <p class="poster-style" id="posterStyle"></p>
+    <div class="poster-meta-row">
+      <div class="poster-meta-item"><span class="poster-meta-label">Date</span><span class="poster-meta-val" id="posterDate">—</span></div>
+      <div class="poster-meta-item"><span class="poster-meta-label">Venue</span><span class="poster-meta-val">The Happening Space</span></div>
+      <div class="poster-meta-item"><span class="poster-meta-label">Starting from</span><span class="poster-meta-val" id="posterPrice">—</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN (hidden until loaded) -->
+<div class="main" id="mainContent" style="display:none">
+  <div class="details-section">
+    <p class="section-eyebrow">About the Workshop</p>
+    <h2 class="details-title" id="detailsTitle"></h2>
+    <p class="details-desc" id="detailsDesc"></p>
+    <div class="section-heading">
+      <span class="section-heading-text">Choose a Package</span>
+      <span class="section-heading-pill pill-red">Step 1</span>
+    </div>
+    <div class="packages" id="packageList"></div>
+    <div class="section-heading">
+      <span class="section-heading-text">Choose your Class Date</span>
+      <span class="section-heading-pill pill-red-outline" id="slotStep">Step 2</span>
+    </div>
+    <div class="schedule-slots" id="slotList"></div>
+    <div class="artist-bio">
+      <p class="section-eyebrow">About the Artist</p>
+      <div class="bio-header">
+        <div class="bio-avatar" id="bioAvatar"></div>
+        <div><p class="bio-name" id="bioName"></p><p class="bio-title" id="bioTitle"></p></div>
+      </div>
+      <p class="bio-text" id="bioText"></p>
+    </div>
+  </div>
+  <div class="enroll-card">
+    <h3 class="enroll-title">Secure Your Spot</h3>
+    <p class="enroll-sub">Fill in your details and choose a package to enroll.</p>
+    <div class="field" id="field-name">
+      <label>Full Name</label>
+      <input type="text" id="inp-name" placeholder="Your full name" autocomplete="name">
+      <p class="err">Please enter your name</p>
+    </div>
+    <div class="field" id="field-phone">
+      <label>WhatsApp Number</label>
+      <input type="tel" id="inp-phone" placeholder="+91 98765 43210" autocomplete="tel">
+      <p class="err">Please enter a valid 10-digit number</p>
+    </div>
+    <div class="field">
+      <label>Workshop</label>
+      <div class="prefilled" id="form-workshop">—</div>
+    </div>
+    <div class="form-summary" id="formSummary"><p class="form-summary-placeholder">Select a package to see pricing</p></div>
+    <button class="enroll-btn" id="enrollBtn" disabled onclick="openConfirmPopup()">
+      Review & Pay <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+    <p class="form-note">Secured by Razorpay · UPI, Cards & Netbanking accepted<br>A 2% convenience fee will be added at checkout</p>
+  </div>
+</div>
+
+<div class="success-screen" id="successScreen">
+  <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+  <h2 class="success-title">You're In!</h2>
+  <p class="success-sub">Your spot is confirmed. We'll see you on the floor — come ready to move.</p>
+  <div class="success-details" id="successDetails"></div>
+  <p class="success-note">Screenshot this screen for your records.</p>
+</div>
+
+<div class="popup-backdrop" id="popupBackdrop">
+  <div class="popup">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <p class="popup-tag">Confirm Enrollment</p>
+    <h3 class="popup-title">Looks Good?</h3>
+    <div class="popup-rows" id="popupRows"></div>
+    <div class="popup-btns">
+      <button class="popup-cancel" onclick="closePopup()">Edit</button>
+      <button class="popup-pay" id="popupPayBtn" onclick="initiatePayment()">
+        Pay Now <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCvGMYRUhDAr4r2zoTbnRJ3PiCwhCWxLFs",
+  authDomain: "the-happening-space.firebaseapp.com",
+  projectId: "the-happening-space",
+  storageBucket: "the-happening-space.firebasestorage.app",
+  messagingSenderId: "834905576967",
+  appId: "1:834905576967:web:b16776452b9111b6483ca2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+const RAZORPAY_KEY = 'rzp_test_SuqUn8n9z5zkae';
+const CONVENIENCE  = 2;
+
+let workshop      = null;
+let selectedPkg   = null;
+let selectedSlots = [];
+
+/* INIT */
+async function init() {
+  const id = new URLSearchParams(window.location.search).get('id');
+  try {
+    const snap = await getDocs(collection(db,'workshops'));
+    const all  = snap.docs.map(d=>({id:d.id,...d.data()}))
+                         .filter(w=>w.status==='active'||w.status==='full');
+    workshop   = all.find(w=>w.id===id) || all[0];
+  } catch(e) {
+    workshop = null;
+  }
+
+  document.getElementById('loadingScreen').style.display = 'none';
+
+  if(!workshop){
+    document.getElementById('mainContent').style.display = 'grid';
+    document.getElementById('mainContent').innerHTML =
+      '<p style="color:var(--text-muted);padding:4rem 0;text-align:center;grid-column:1/-1">No workshop found. Please check back soon.</p>';
+    return;
+  }
+
+  document.getElementById('posterHero').style.display  = 'flex';
+  document.getElementById('mainContent').style.display = 'grid';
+  renderPage();
+}
+
+/* RENDER */
+function renderPage(){
+  const w   = workshop;
+  const pkg = w.packages||[];
+  const slt = w.slots||[];
+  document.title = w.artist + ' Workshop — The Happening Space';
+
+  const bg = document.getElementById('posterBg');
+  // Clear all background styles first
+  bg.style.cssText = 'position:absolute;inset:0;transition:transform 0.6s ease;';
+  if(w.poster && w.poster.length > 10){
+    bg.style.backgroundImage    = `url('${w.poster}')`;
+    bg.style.backgroundSize     = 'cover';
+    bg.style.backgroundPosition = 'center';
+    bg.style.backgroundRepeat   = 'no-repeat';
+  } else {
+    bg.style.background = w.posterBg||'linear-gradient(145deg,#1a0407,#bc1f2e)';
+  }
+
+  document.getElementById('posterTag').textContent    = w.tag||'Workshop';
+  document.getElementById('posterArtist').textContent = w.artist||'—';
+  document.getElementById('posterStyle').textContent  = w.style||'';
+  document.getElementById('posterDate').textContent   = slt[0]?.date||'—';
+  const minP = pkg.length?Math.min(...pkg.map(p=>parseInt(p.price)||0)):0;
+  document.getElementById('posterPrice').textContent  = '₹'+minP.toLocaleString('en-IN')+' onwards';
+  document.getElementById('detailsTitle').textContent = w.artist+' — '+w.style;
+  document.getElementById('detailsDesc').textContent  = w.desc||'';
+  document.getElementById('bioAvatar').textContent    = w.initials||(w.artist||'').split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('bioName').textContent      = w.artist;
+  document.getElementById('bioTitle').textContent     = w.bioTitle||w.style||'';
+  document.getElementById('bioText').textContent      = w.bio||'';
+  document.getElementById('form-workshop').textContent= w.artist+' — '+w.style;
+
+  document.getElementById('packageList').innerHTML = pkg.map(p=>`
+    <div class="package-opt" id="pkg-${p.id}" onclick="selectPackage('${p.id}')">
+      ${p.badge?`<span class="pkg-badge">${p.badge}</span>`:''}
+      <div class="pkg-radio"></div>
+      <div class="pkg-info"><p class="pkg-name">${p.name}</p></div>
+      <span class="pkg-price">₹${parseInt(p.price||0).toLocaleString('en-IN')}</span>
+    </div>`).join('');
+
+  renderSlots(0);
+}
+
+/* SLOTS */
+function getSessionCount(p){
+  if(!p) return 1;
+  const t=((p.name||'')+' '+(p.desc||'')).toLowerCase();
+  const m=t.match(/(\d+)\s*(class|session|day)/);
+  return m?parseInt(m[1]):1;
+}
+
+function renderSlots(count){
+  const slt=(workshop.slots||[]);
+  selectedSlots=slt.slice(0,count);
+  document.getElementById('slotList').innerHTML=slt.map((s,i)=>`
+    <div class="slot-opt ${i<count?'selected':''}" id="slot-${s.id}" onclick="selectSlotToggle('${s.id}')">
+      <div class="slot-radio"></div>
+      <div class="slot-info">
+        <p class="slot-date">${s.date}</p>
+        <p class="slot-time">${s.time}</p>
+        ${s.song?`<p class="slot-song">♪ ${s.song}</p>`:''}
+      </div>
+      <span class="slot-spots ${parseInt(s.spots)<=5?'low':''}">${parseInt(s.spots)<=5?'⚡ '+s.spots+' left':s.spots+' spots'}</span>
+    </div>`).join('');
+}
+
+window.selectPackage = function(id){
+  selectedPkg=(workshop.packages||[]).find(p=>p.id===id);
+  selectedSlots=[];
+  document.querySelectorAll('.package-opt').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('pkg-'+id).classList.add('selected');
+  const n=getSessionCount(selectedPkg);
+  renderSlots(n);
+  document.getElementById('slotStep').textContent=n===1?'Pick 1 date':'Pick '+n+' dates';
+  updateFormSummary();
+  updateEnrollBtn();
+};
+
+window.selectSlotToggle = function(id){
+  if(!selectedPkg){alert('Please choose a package first.');return;}
+  const max=(getSessionCount(selectedPkg));
+  const slot=(workshop.slots||[]).find(s=>s.id===id);
+  const idx=selectedSlots.findIndex(s=>s.id===id);
+  if(idx>-1){if(selectedSlots.length>1)selectedSlots.splice(idx,1);}
+  else{if(selectedSlots.length>=max)selectedSlots.pop();selectedSlots.push(slot);}
+  document.querySelectorAll('.slot-opt').forEach(el=>el.classList.remove('selected'));
+  selectedSlots.forEach(s=>{const el=document.getElementById('slot-'+s.id);if(el)el.classList.add('selected');});
+  updateEnrollBtn();
+};
+
+/* FORM */
+function updateFormSummary(){
+  const el=document.getElementById('formSummary');
+  if(!selectedPkg){el.innerHTML='<p class="form-summary-placeholder">Select a package to see pricing</p>';return;}
+  const base=parseInt(selectedPkg.price)||0;
+  const fee=Math.round(base*CONVENIENCE/100);
+  const total=base+fee;
+  el.innerHTML=`
+    <div class="form-summary-row"><span>${selectedPkg.name}</span><span>₹${base.toLocaleString('en-IN')}</span></div>
+    <div class="form-summary-row"><span>Convenience fee (${CONVENIENCE}%)</span><span>₹${fee.toLocaleString('en-IN')}</span></div>
+    <div class="form-summary-row total"><span>Total</span><span>₹${total.toLocaleString('en-IN')}</span></div>`;
+}
+
+function validateForm(){
+  const name=document.getElementById('inp-name').value.trim();
+  const phone=document.getElementById('inp-phone').value.replace(/\D/g,'');
+  return name.length>0&&phone.length>=10&&selectedPkg&&selectedSlots.length>0;
+}
+function updateEnrollBtn(){document.getElementById('enrollBtn').disabled=!validateForm();}
+
+/* POPUP */
+window.openConfirmPopup = function(){
+  if(!validateForm())return;
+  const name=document.getElementById('inp-name').value.trim();
+  const phone=document.getElementById('inp-phone').value.trim();
+  const base=parseInt(selectedPkg.price)||0;
+  const fee=Math.round(base*CONVENIENCE/100);
+  const total=base+fee;
+  document.getElementById('popupRows').innerHTML=`
+    <div class="popup-row"><span>Name</span><span>${name}</span></div>
+    <div class="popup-row"><span>Phone</span><span>${phone}</span></div>
+    <div class="popup-row"><span>Artist</span><span>${workshop.artist}</span></div>
+    <div class="popup-row"><span>Package</span><span>${selectedPkg.name}</span></div>
+    <div class="popup-row"><span>Date(s)</span><span style="line-height:1.6">${selectedSlots.map(s=>s.date+' · '+s.time).join('<br>')}</span></div>
+    <div class="popup-row"><span>Base price</span><span>₹${base.toLocaleString('en-IN')}</span></div>
+    <div class="popup-row"><span>Convenience fee</span><span>₹${fee.toLocaleString('en-IN')}</span></div>
+    <div class="popup-row total"><span>Total Payable</span><span>₹${total.toLocaleString('en-IN')}</span></div>`;
+  document.getElementById('popupBackdrop').classList.add('open');
+  document.body.style.overflow='hidden';
+};
+window.closePopup=function(){document.getElementById('popupBackdrop').classList.remove('open');document.body.style.overflow='';};
+
+/* PAYMENT */
+window.initiatePayment = function(){
+  const name=document.getElementById('inp-name').value.trim();
+  const phone=document.getElementById('inp-phone').value.trim();
+  const base=parseInt(selectedPkg.price)||0;
+  const fee=Math.round(base*CONVENIENCE/100);
+  const total=base+fee;
+  const slots=selectedSlots.map(s=>s.date+' · '+s.time).join(' | ');
+  const btn=document.getElementById('popupPayBtn');
+  btn.innerHTML='<span class="btn-spinner"></span> Opening…';
+  btn.disabled=true;
+
+  const options={
+    key:RAZORPAY_KEY,amount:total*100,currency:'INR',
+    name:'The Happening Space',description:workshop.artist+' — '+selectedPkg.name,
+    prefill:{name,contact:phone},
+    notes:{artist:workshop.artist,package:selectedPkg.name,slots},
+    theme:{color:'#bc1f2e'},
+    handler:async function(response){
+      closePopup();
+      const data={
+        name,phone,workshop:workshop.artist,style:workshop.style||'',
+        package:selectedPkg.name,slots,amount_paid:total,
+        payment_type:'Online',
+        payment_id:response.razorpay_payment_id,
+        order_id:response.razorpay_order_id||'',
+        timestamp:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}),
+      };
+      // Save to Firebase
+      try{ await addDoc(collection(db,'registrations'),data); }catch(e){}
+      // Update spots in Firebase
+      try{
+        const wsDoc=await getDoc(doc(db,'workshops',workshop.id));
+        if(wsDoc.exists()){
+          const w=wsDoc.data();
+          selectedSlots.forEach(sel=>{
+            const idx=w.slots.findIndex(s=>s.id===sel.id);
+            if(idx>-1&&w.slots[idx].spots>0) w.slots[idx].spots--;
+          });
+          await updateDoc(doc(db,'workshops',workshop.id),{slots:w.slots});
+        }
+      }catch(e){}
+      showSuccess(data);
+    },
+    modal:{ondismiss:function(){btn.innerHTML='Pay Now <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';btn.disabled=false;}}
+  };
+  const rzp=new Razorpay(options);
+  rzp.on('payment.failed',function(r){btn.innerHTML='Pay Now';btn.disabled=false;alert('Payment failed: '+r.error.description);});
+  rzp.open();
+};
+
+function showSuccess(data){
+  document.getElementById('mainContent').style.display='none';
+  document.querySelector('.back-link').style.display='none';
+  document.getElementById('posterHero').style.display='none';
+  document.getElementById('successDetails').innerHTML=`
+    <div class="success-row"><span>Name</span><span>${data.name}</span></div>
+    <div class="success-row"><span>Workshop</span><span>${data.workshop}</span></div>
+    <div class="success-row"><span>Package</span><span>${data.package}</span></div>
+    <div class="success-row"><span>Date(s)</span><span>${data.slots}</span></div>
+    <div class="success-row"><span>Amount paid</span><span>₹${data.amount_paid.toLocaleString('en-IN')}</span></div>
+    <div class="success-row"><span>Payment ID</span><span style="font-size:0.72rem">${data.payment_id}</span></div>`;
+  document.getElementById('successScreen').classList.add('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* NAV + CURSOR */
+window.toggleMenu=function(){
+  const o=document.getElementById('navOverlay');
+  const b=document.getElementById('hamburger');
+  const open=o.classList.toggle('open');
+  b.classList.toggle('open',open);
+  document.body.style.overflow=open?'hidden':'';
+};
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.getElementById('navOverlay').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+    document.getElementById('popupBackdrop').classList.remove('open');
+    document.body.style.overflow='';
+  }
+});
+
+const cursor=document.getElementById('cursor');
+const ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;});
+(function animRing(){rx+=(mx-rx)*0.14;ry+=(my-ry)*0.14;ring.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;requestAnimationFrame(animRing);})();
+document.addEventListener('mouseleave',()=>{cursor.style.opacity='0';ring.style.opacity='0';});
+document.addEventListener('mouseenter',()=>{cursor.style.opacity='1';ring.style.opacity='1';});
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('inp-name').addEventListener('input',updateEnrollBtn);
+  document.getElementById('inp-phone').addEventListener('input',updateEnrollBtn);
+  document.getElementById('inp-name').addEventListener('blur',()=>{document.getElementById('field-name').classList.toggle('has-error',!document.getElementById('inp-name').value.trim());});
+  document.getElementById('inp-phone').addEventListener('blur',()=>{document.getElementById('field-phone').classList.toggle('has-error',document.getElementById('inp-phone').value.replace(/\D/g,'').length<10);});
+  init();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Happening Space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#bc1f2e;
+  --red-dark:#8f1520;
+  --red-glow:rgba(188,31,46,0.25);
+  --black:#0a0a0a;
+  --off-black:#111111;
+  --card-bg:#161616;
+  --border:rgba(255,255,255,0.08);
+  --border-red:rgba(188,31,46,0.4);
+  --text:#f5f5f0;
+  --text-muted:rgba(245,245,240,0.45);
+  --text-mid:rgba(245,245,240,0.7);
+  --white:#ffffff;
+  --yellow:#f5e642;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--text);font-family:'Syne',sans-serif;overflow-x:hidden;cursor:none}
+
+/* CUSTOM CURSOR */
+.cursor{position:fixed;width:12px;height:12px;background:var(--red);border-radius:50%;pointer-events:none;z-index:9999;top:0;left:0;transform:translate(-50%,-50%);transition:width 0.2s,height 0.2s,opacity 0.2s}
+.cursor-ring{position:fixed;width:38px;height:38px;border:2px solid rgba(188,31,46,0.75);border-radius:50%;pointer-events:none;z-index:9998;top:0;left:0;transform:translate(-50%,-50%)}
+
+/* NOISE OVERLAY */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:9000;opacity:0.6}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;pointer-events:all}
+.logo-box{width:36px;height:36px;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff;letter-spacing:0.05em;flex-shrink:0}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:0.1em;color:var(--text);line-height:1}
+.logo-text span{color:var(--red)}
+
+/* hamburger button — always visible */
+.hamburger{display:flex;flex-direction:column;justify-content:center;gap:6px;width:44px;height:44px;cursor:none;pointer-events:all;background:rgba(10,10,10,0.7);backdrop-filter:blur(10px);border:1px solid var(--border);padding:12px;z-index:300;position:relative;transition:border-color 0.3s}
+.hamburger:hover{border-color:var(--red)}
+.hamburger span{display:block;width:20px;height:1.5px;background:var(--text);transition:transform 0.35s ease,opacity 0.25s ease,width 0.3s ease;transform-origin:center}
+.hamburger.open span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;width:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+
+/* full-screen overlay */
+.nav-overlay{position:fixed;inset:0;z-index:250;background:rgba(10,10,10,0.97);display:flex;flex-direction:column;justify-content:center;padding:4rem 3rem;opacity:0;pointer-events:none;transition:opacity 0.4s ease;backdrop-filter:blur(20px)}
+.nav-overlay.open{opacity:1;pointer-events:all}
+.nav-overlay-inner{max-width:700px}
+.nav-overlay-label{font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--text-muted);margin-bottom:2.5rem;display:flex;align-items:center;gap:0.75rem}
+.nav-overlay-label::before{content:'';width:24px;height:1px;background:var(--text-muted)}
+.nav-overlay-links{list-style:none;display:flex;flex-direction:column;gap:0}
+.nav-overlay-links li{border-bottom:1px solid var(--border);overflow:hidden}
+.nav-overlay-links a{display:flex;align-items:center;justify-content:space-between;text-decoration:none;padding:1.1rem 0;font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,6vw,3.8rem);letter-spacing:0.04em;color:var(--text);transition:color 0.2s,padding-left 0.25s;line-height:1}
+.nav-overlay-links a:hover{color:var(--red);padding-left:0.75rem}
+.nav-overlay-links a .link-num{font-family:'Syne',sans-serif;font-size:0.7rem;letter-spacing:0.15em;color:var(--text-muted);font-weight:400;align-self:flex-start;margin-top:0.4rem}
+.nav-overlay-links a.active{color:var(--red)}
+.nav-overlay-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:2.5rem;flex-wrap:wrap;gap:1rem}
+.nav-overlay-address{font-size:0.75rem;color:var(--text-muted);line-height:1.6;font-style:normal}
+.nav-overlay-social{display:flex;gap:0.75rem}
+.nav-social-btn{width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);text-decoration:none;font-size:0.7rem;font-weight:700;transition:border-color 0.2s,color 0.2s}
+.nav-social-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* stagger animation for links */
+.nav-overlay-links li{transform:translateY(20px);opacity:0;transition:transform 0.4s ease,opacity 0.4s ease}
+.nav-overlay.open .nav-overlay-links li:nth-child(1){transform:translateY(0);opacity:1;transition-delay:0.08s}
+.nav-overlay.open .nav-overlay-links li:nth-child(2){transform:translateY(0);opacity:1;transition-delay:0.13s}
+.nav-overlay.open .nav-overlay-links li:nth-child(3){transform:translateY(0);opacity:1;transition-delay:0.18s}
+.nav-overlay.open .nav-overlay-links li:nth-child(4){transform:translateY(0);opacity:1;transition-delay:0.23s}
+.nav-overlay.open .nav-overlay-links li:nth-child(5){transform:translateY(0);opacity:1;transition-delay:0.28s}
+.nav-overlay.open .nav-overlay-links li:nth-child(6){transform:translateY(0);opacity:1;transition-delay:0.33s}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 2rem 5rem;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0a0a0a 0%,#1a0608 50%,#0a0a0a 100%)}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(188,31,46,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(188,31,46,0.06) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{from{background-position:0 0}to{background-position:60px 60px}}
+.hero-accent{position:absolute;top:20%;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(188,31,46,0.18) 0%,transparent 70%);animation:pulse 4s ease-in-out infinite}
+.hero-accent2{position:absolute;bottom:10%;left:-80px;width:350px;height:350px;background:radial-gradient(circle,rgba(188,31,46,0.1) 0%,transparent 70%);animation:pulse 4s ease-in-out infinite 2s}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:0.7}50%{transform:scale(1.1);opacity:1}}
+.hero-label{font-size:0.72rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:1.25rem;display:flex;align-items:center;gap:0.75rem;animation:fadeUp 0.8s ease 0.2s both}
+.hero-label::before{content:'';width:32px;height:1px;background:var(--red)}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4.5rem,14vw,13rem);line-height:0.88;letter-spacing:0.02em;color:var(--text);animation:fadeUp 0.8s ease 0.4s both;position:relative;z-index:1}
+.hero-title .outline{-webkit-text-stroke:1.5px var(--red);color:transparent}
+.hero-title .filled{color:var(--red)}
+.hero-sub-row{display:flex;align-items:flex-end;justify-content:space-between;margin-top:2rem;animation:fadeUp 0.8s ease 0.6s both}
+.hero-desc{font-size:1rem;color:var(--text-muted);max-width:420px;line-height:1.7;font-weight:300}
+.hero-btns{display:flex;gap:1rem;flex-shrink:0}
+.btn-primary{background:var(--red);color:#fff;border:none;padding:0.85rem 2rem;font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;cursor:none;transition:background 0.2s,transform 0.15s}
+.btn-primary:hover{background:var(--red-dark);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border);padding:0.85rem 1.75rem;font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;display:inline-flex;align-items:center;cursor:none;transition:border-color 0.2s,color 0.2s,transform 0.15s}
+.btn-outline:hover{border-color:var(--red);color:var(--red);transform:translateY(-2px)}
+.scroll-indicator{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;animation:fadeIn 1s ease 1.2s both}
+.scroll-indicator span{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted)}
+.scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,var(--red),transparent);animation:scrollPulse 2s ease infinite}
+@keyframes scrollPulse{0%,100%{transform:scaleY(1);opacity:1}50%{transform:scaleY(0.6);opacity:0.5}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ── PHOTO STRIP ── */
+.strip-section{padding:4rem 0;overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--off-black);position:relative}
+.strip-track{display:flex;gap:1rem;animation:stripScroll 30s linear infinite;width:max-content}
+.strip-track:hover{animation-play-state:paused}
+.strip-photo{width:280px;height:190px;flex-shrink:0;overflow:hidden;position:relative;border-radius:2px}
+.strip-photo .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.25);font-weight:500;transition:transform 0.4s ease}
+.strip-photo:hover .ph{transform:scale(1.04)}
+@keyframes stripScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.strip-label{position:absolute;top:50%;left:2rem;transform:translateY(-50%);font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);z-index:2;writing-mode:vertical-rl}
+
+/* ── SECTION COMMON ── */
+section{padding:5rem 2rem}
+.section-eyebrow{font-size:0.68rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--red);margin-bottom:0.75rem;display:flex;align-items:center;gap:0.6rem}
+.section-eyebrow::before{content:'';width:20px;height:1px;background:var(--red)}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,6vw,4.5rem);letter-spacing:0.04em;line-height:0.95;color:var(--text);margin-bottom:0.5rem}
+.section-title .red{color:var(--red)}
+.section-sub{color:var(--text-muted);font-size:0.92rem;font-weight:300;max-width:480px;line-height:1.7;margin-bottom:3rem}
+
+/* ── WORKSHOPS ── */
+.workshops-section{background:var(--black)}
+.workshops-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3rem;flex-wrap:wrap;gap:1rem}
+.workshops-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem}
+.workshop-card{background:var(--card-bg);border:1px solid var(--border);border-radius:2px;overflow:hidden;transition:border-color 0.3s,transform 0.3s;position:relative;cursor:none}
+.workshop-card:hover{border-color:var(--border-red);transform:translateY(-6px)}
+.workshop-card:hover .card-poster{transform:scale(1.04)}
+.card-poster-wrap{height:260px;overflow:hidden;position:relative}
+.card-poster{width:100%;height:100%;transition:transform 0.5s ease;display:flex;align-items:center;justify-content:center;position:relative}
+.card-poster-label{position:absolute;bottom:0;left:0;right:0;padding:1.5rem 1.25rem 1rem;background:linear-gradient(to top,rgba(0,0,0,0.85),transparent)}
+.card-artist{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0.06em;color:#fff;line-height:1}
+.card-style{font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:0.2rem}
+.card-body{padding:1.25rem}
+.card-date-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.card-date{font-size:0.78rem;color:var(--text-muted);letter-spacing:0.05em}
+.card-price{font-size:1rem;font-weight:700;color:var(--yellow)}
+.card-enroll{display:flex;align-items:center;justify-content:space-between;background:var(--red);padding:0.7rem 1rem;text-decoration:none;color:#fff;font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;transition:background 0.2s;margin-top:0.25rem}
+.card-enroll:hover{background:var(--red-dark)}
+.card-enroll svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5}
+.card-tag{position:absolute;top:1rem;right:1rem;background:var(--yellow);color:#0a0a0a;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.3rem 0.6rem;border-radius:1px}
+
+/* poster placeholder colors */
+.ph-red{background:linear-gradient(135deg,#2a0509,#bc1f2e)}
+.ph-dark{background:linear-gradient(135deg,#111,#333)}
+.ph-warm{background:linear-gradient(135deg,#1a0f05,#8b4513)}
+.ph-blue{background:linear-gradient(135deg,#050a1a,#1a3a6b)}
+.ph-green{background:linear-gradient(135deg,#051a0a,#1a5c2a)}
+.ph-purple{background:linear-gradient(135deg,#100518,#4b1a7a)}
+
+/* ── REGULAR BATCHES ── */
+.batches-section{background:var(--off-black);border-top:1px solid var(--border)}
+.batches-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem}
+.batch-card{border:1px solid var(--border);border-radius:2px;overflow:hidden;transition:border-color 0.3s,transform 0.3s;cursor:none;position:relative}
+.batch-card:hover{border-color:var(--border-red);transform:translateY(-4px)}
+.batch-poster{height:200px;display:flex;align-items:flex-end;padding:1.25rem;position:relative;overflow:hidden}
+.batch-poster-inner{width:100%;height:100%;position:absolute;inset:0;transition:transform 0.4s ease}
+.batch-card:hover .batch-poster-inner{transform:scale(1.05)}
+.batch-poster-content{position:relative;z-index:1}
+.batch-name{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:0.06em;color:#fff;line-height:1}
+.batch-level{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:0.15rem}
+.batch-body{padding:1rem 1.25rem;background:var(--card-bg)}
+.batch-info{display:flex;gap:1.25rem;margin-bottom:0.9rem}
+.batch-info-item{font-size:0.78rem;color:var(--text-muted)}
+.batch-info-item strong{display:block;color:var(--text);font-weight:500;font-size:0.82rem}
+.batch-join{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.73rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);text-decoration:none;border:1px solid var(--border-red);padding:0.5rem 0.9rem;transition:background 0.2s,color 0.2s}
+.batch-join:hover{background:var(--red);color:#fff}
+
+/* ── INFO / ABOUT STRIP ── */
+.info-section{background:var(--black);border-top:1px solid var(--border)}
+.info-inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.info-visual{position:relative}
+.info-big-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(6rem,18vw,14rem);line-height:0.85;color:transparent;-webkit-text-stroke:1px rgba(188,31,46,0.3);user-select:none;position:relative}
+.info-stats{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem}
+.stat-item{}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--red);line-height:1}
+.stat-label{font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-top:0.15rem}
+.info-content{}
+.info-desc{color:var(--text-muted);font-size:0.95rem;font-weight:300;line-height:1.8;margin-bottom:2rem}
+.info-features{display:flex;flex-direction:column;gap:1rem;margin-bottom:2.5rem}
+.info-feature{display:flex;align-items:flex-start;gap:1rem}
+.feat-icon{width:36px;height:36px;border:1px solid var(--border-red);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.feat-icon svg{width:16px;height:16px;stroke:var(--red);fill:none;stroke-width:2}
+.feat-text strong{display:block;font-size:0.85rem;font-weight:600;color:var(--text);margin-bottom:0.15rem}
+.feat-text span{font-size:0.78rem;color:var(--text-muted);line-height:1.5}
+
+/* ── FOOTER ── */
+footer{background:var(--off-black);border-top:1px solid var(--border);padding:4rem 2rem 2rem}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.footer-brand{}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:0.1em;color:var(--text);margin-bottom:0.75rem}
+.footer-logo span{color:var(--red)}
+.footer-tagline{font-size:0.82rem;color:var(--text-muted);line-height:1.7;max-width:280px;font-weight:300}
+.footer-address{margin-top:1.25rem;font-size:0.78rem;color:var(--text-muted);line-height:1.7;font-style:normal}
+.footer-col-title{font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--red);margin-bottom:1.1rem;font-weight:600}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:0.65rem}
+.footer-links a{color:var(--text-muted);text-decoration:none;font-size:0.83rem;font-weight:300;transition:color 0.2s}
+.footer-links a:hover{color:var(--red)}
+.footer-social{display:flex;gap:0.75rem;margin-top:1.25rem}
+.social-btn{width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);text-decoration:none;transition:border-color 0.2s,color 0.2s,background 0.2s;font-size:0.72rem;font-weight:700;letter-spacing:0.05em}
+.social-btn:hover{border-color:var(--red);color:var(--red)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:1.5rem;font-size:0.72rem;color:var(--text-muted);letter-spacing:0.05em;flex-wrap:wrap;gap:0.5rem}
+.footer-bottom a{color:var(--text-muted);text-decoration:none}
+.footer-bottom a:hover{color:var(--red)}
+
+/* ── MOBILE ── */
+@media(max-width:900px){
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .info-inner{grid-template-columns:1fr}
+  .info-visual{display:none}
+}
+@media(max-width:680px){
+  .hero-sub-row{flex-direction:column;align-items:flex-start;gap:1.5rem}
+  .footer-grid{grid-template-columns:1fr}
+  .cursor,.cursor-ring{display:none}
+  body{cursor:auto}
+  section{padding:4rem 1.25rem}
+  nav{padding:1rem 1.25rem}
+  .hero{padding:0 1.25rem 4rem}
+  .nav-overlay{padding:4rem 1.5rem}
+  .nav-overlay-links a{font-size:2.2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">
+    <div class="logo-box">TH</div>
+    <div class="logo-text">The <span>Happening</span><br>Space</div>
+  </a>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- FULL SCREEN MENU OVERLAY -->
+<div class="nav-overlay" id="navOverlay">
+  <div class="nav-overlay-inner">
+    <p class="nav-overlay-label">Menu</p>
+    <ul class="nav-overlay-links">
+      <li><a href="index.html" class="active"><span>Home</span><span class="link-num">01</span></a></li>
+      <li><a href="workshops.html"><span>Workshops</span><span class="link-num">02</span></a></li>
+      <li><a href="batches.html"><span>Regular Batches</span><span class="link-num">03</span></a></li>
+      <li><a href="studio-booking.html"><span>Studio Booking</span><span class="link-num">04</span></a></li>
+      <li><a href="about.html"><span>About Us</span><span class="link-num">05</span></a></li>
+      <li><a href="contact.html"><span>Contact Us</span><span class="link-num">06</span></a></li>
+    </ul>
+    <div class="nav-overlay-bottom">
+      <address class="nav-overlay-address">
+        311 – International Wealth Center<br>VIP Road, Surat, Gujarat
+      </address>
+      <div class="nav-overlay-social">
+        <a href="#" class="nav-social-btn">IG</a>
+        <a href="#" class="nav-social-btn">YT</a>
+        <a href="#" class="nav-social-btn">WA</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-accent"></div>
+  <div class="hero-accent2"></div>
+  <p class="hero-label">Surat's Premier Dance Studio</p>
+  <h1 class="hero-title">
+    <span class="outline">THE</span><br>
+    <span class="filled">HAPPENING</span><br>
+    <span class="outline">SPACE</span>
+  </h1>
+  <div class="hero-sub-row">
+    <p class="hero-desc">Where movement becomes identity. Workshops, regular batches, and a community built for those who live to dance.</p>
+    <div class="hero-btns">
+      <a href="workshops.html" class="btn-primary">
+        Explore Workshops
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="about.html" class="btn-outline">Our Story</a>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- PHOTO STRIP -->
+<div class="strip-section">
+  <div class="strip-track" id="stripTrack">
+    <!-- 8 photos × 2 for seamless loop -->
+    <div class="strip-photo"><div class="ph ph-red" style="background:linear-gradient(135deg,#2a0509,#bc1f2e)">Add Your Photo</div></div>
+    <div class="strip-photo"><div class="ph ph-dark" style="background:linear-gradient(135deg,#111,#2a2a2a)">Add Your Photo</div></div>
+    <div class="strip-photo"><div class="ph ph-warm" style="background:linear-gradient(135deg,#1a0c05,#6b3010)">Add Your Photo</div></div>
+    <div class="strip-photo"><div class="ph ph-blue" style="background:linear-gradient(135deg,#05080f,#0f2240)">Add Your Photo</div></div>
+    <div class="strip-photo"><div class="ph ph-green" style="background:linear-gradient(135deg,#050f08,#0f3a1a)">Add Your Photo</div></div>
+    <div class="strip-photo"><div class="ph ph-purple" style="background:linear-gradient(135deg,#0e0514,#3a1060)">Add Your Photo</div></div>
+    <div class="strip-photo"><div class="ph" style="background:linear-gradient(135deg,#1a0509,#8b1520)">Add Your Photo</div></div>
+    <div class="strip-photo"><div class="ph" style="background:linear-gradient(135deg,#0a0a0a,#1e1e1e)">Add Your Photo</div></div>
+    <!-- duplicate for loop -->
+    <div class="strip-photo"><div class="ph ph-red" style="background:linear-gradient(135deg,#2a0509,#bc1f2e)">Add Your Photo</div></div>
+    <div class="strip-photo"><div class="ph ph-dark" style="background:linear-gradient(135deg,#111,#2a2a2a)">Add Your Photo</div></div>
+    <div class="strip-photo"><div class="ph ph-warm" style="background:linear-gradient(135deg,#1a0c05,#6b3010)">Add Your Photo</div></div>
+    <div class="strip-photo"><div class="ph ph-blue" style="background:linear-gradient(135deg,#05080f,#0f2240)">Add Your Photo</div></div>
+    <div class="strip-photo"><div class="ph ph-green" style="background:linear-gradient(135deg,#050f08,#0f3a1a)">Add Your Photo</div></div>
+    <div class="strip-photo"><div class="ph ph-purple" style="background:linear-gradient(135deg,#0e0514,#3a1060)">Add Your Photo</div></div>
+    <div class="strip-photo"><div class="ph" style="background:linear-gradient(135deg,#1a0509,#8b1520)">Add Your Photo</div></div>
+    <div class="strip-photo"><div class="ph" style="background:linear-gradient(135deg,#0a0a0a,#1e1e1e)">Add Your Photo</div></div>
+  </div>
+</div>
+
+<!-- WORKSHOPS -->
+<section class="workshops-section" id="workshops">
+  <div class="workshops-header">
+    <div>
+      <p class="section-eyebrow">Upcoming</p>
+      <h2 class="section-title">EXPLORE <span class="red">WORKSHOPS</span></h2>
+      <p class="section-sub">Led by the best artists in the game. Book your spot before it fills up.</p>
+    </div>
+    <a href="workshops.html" class="btn-outline">View All</a>
+  </div>
+  <div class="workshops-grid" id="workshopsGrid">
+    <!-- Loaded from Firebase -->
+    <div style="grid-column:1/-1;text-align:center;padding:3rem;color:rgba(245,245,240,0.3);font-size:0.85rem;letter-spacing:0.1em;text-transform:uppercase">Loading workshops…</div>
+  </div>
+</section>
+
+<!-- REGULAR BATCHES -->
+<section class="batches-section" id="batches">
+  <p class="section-eyebrow">Ongoing</p>
+  <h2 class="section-title">REGULAR <span class="red">BATCHES</span></h2>
+  <p class="section-sub">Consistent training, real growth. Join a batch that fits your schedule and level.</p>
+  <div class="batches-grid">
+
+    <div class="batch-card">
+      <div class="batch-poster">
+        <div class="batch-poster-inner" style="background:linear-gradient(145deg,#1a0407,#bc1f2e)"></div>
+        <div class="batch-poster-content">
+          <p class="batch-name">Hip-Hop Basics</p>
+          <p class="batch-level">Beginner · All Ages</p>
+        </div>
+      </div>
+      <div class="batch-body">
+        <div class="batch-info">
+          <div class="batch-info-item"><strong>Mon · Wed · Fri</strong>6:00 PM – 7:30 PM</div>
+          <div class="batch-info-item"><strong>Add Fee</strong>per month</div>
+        </div>
+        <a href="batches.html" class="batch-join">Join Batch →</a>
+      </div>
+    </div>
+
+    <div class="batch-card">
+      <div class="batch-poster">
+        <div class="batch-poster-inner" style="background:linear-gradient(145deg,#050a1a,#1a3a6b)"></div>
+        <div class="batch-poster-content">
+          <p class="batch-name">Contemporary</p>
+          <p class="batch-level">Intermediate · Teen+</p>
+        </div>
+      </div>
+      <div class="batch-body">
+        <div class="batch-info">
+          <div class="batch-info-item"><strong>Tue · Thu · Sat</strong>7:30 PM – 9:00 PM</div>
+          <div class="batch-info-item"><strong>Add Fee</strong>per month</div>
+        </div>
+        <a href="batches.html" class="batch-join">Join Batch →</a>
+      </div>
+    </div>
+
+    <div class="batch-card">
+      <div class="batch-poster">
+        <div class="batch-poster-inner" style="background:linear-gradient(145deg,#0e0514,#4b1a7a)"></div>
+        <div class="batch-poster-content">
+          <p class="batch-name">Bollywood Fusion</p>
+          <p class="batch-level">All Levels · Adults</p>
+        </div>
+      </div>
+      <div class="batch-body">
+        <div class="batch-info">
+          <div class="batch-info-item"><strong>Mon · Wed</strong>5:00 PM – 6:30 PM</div>
+          <div class="batch-info-item"><strong>Add Fee</strong>per month</div>
+        </div>
+        <a href="batches.html" class="batch-join">Join Batch →</a>
+      </div>
+    </div>
+
+    <div class="batch-card">
+      <div class="batch-poster">
+        <div class="batch-poster-inner" style="background:linear-gradient(145deg,#050f08,#0f5c2a)"></div>
+        <div class="batch-poster-content">
+          <p class="batch-name">Advanced Batch</p>
+          <p class="batch-level">Advanced · Audition Required</p>
+        </div>
+      </div>
+      <div class="batch-body">
+        <div class="batch-info">
+          <div class="batch-info-item"><strong>Daily</strong>8:00 AM – 10:00 AM</div>
+          <div class="batch-info-item"><strong>Add Fee</strong>per month</div>
+        </div>
+        <a href="batches.html" class="batch-join">Join Batch →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- INFO SECTION -->
+<section class="info-section">
+  <div class="info-inner">
+    <div class="info-visual">
+      <div class="info-big-num">10+</div>
+      <div class="info-stats">
+        <div class="stat-item">
+          <div class="stat-num">150+</div>
+          <div class="stat-label">Students weekly</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">6+</div>
+          <div class="stat-label">Artists hosted</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">4+</div>
+          <div class="stat-label">Batch styles</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">1</div>
+          <div class="stat-label">Community</div>
+        </div>
+      </div>
+    </div>
+    <div class="info-content">
+      <p class="section-eyebrow">Why Us</p>
+      <h2 class="section-title">MORE THAN A <span class="red">STUDIO</span></h2>
+      <p class="info-desc">The Happening Space is Surat's home for serious dancers and curious beginners alike. We don't just teach steps — we build artists, communities, and experiences that stay with you.</p>
+      <div class="info-features">
+        <div class="info-feature">
+          <div class="feat-icon">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="feat-text">
+            <strong>Artist-led workshops</strong>
+            <span>Every workshop is taught by a practising artist at the top of their style.</span>
+          </div>
+        </div>
+        <div class="info-feature">
+          <div class="feat-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <div class="feat-text">
+            <strong>Professional studio space</strong>
+            <span>Sprung floors, mirrored walls, quality sound — the right environment to grow.</span>
+          </div>
+        </div>
+        <div class="info-feature">
+          <div class="feat-icon">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div class="feat-text">
+            <strong>Community first</strong>
+            <span>A space where dancers connect, collaborate, and push each other forward.</span>
+          </div>
+        </div>
+      </div>
+      <a href="about.html" class="btn-primary">About The Space →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-logo">The <span>Happening</span> Space</div>
+      <p class="footer-tagline">Surat's home for movement, community, and culture. Come as you are. Leave transformed.</p>
+      <address class="footer-address">
+        311 – International Wealth Center<br>
+        VIP Road, Surat, Gujarat
+      </address>
+      <div class="footer-social">
+        <a href="#" class="social-btn">IG</a>
+        <a href="#" class="social-btn">YT</a>
+        <a href="#" class="social-btn">WA</a>
+      </div>
+    </div>
+    <div>
+      <p class="footer-col-title">Navigate</p>
+      <ul class="footer-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="workshops.html">Workshops</a></li>
+        <li><a href="batches.html">Regular Batches</a></li>
+        <li><a href="studio-booking.html">Studio Booking</a></li>
+        <li><a href="about.html">About Us</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-col-title">Workshops</p>
+      <ul class="footer-links">
+        <li><a href="workshop-detail.html?id=heet-samani">Heet Samani</a></li>
+        <li><a href="workshop-detail.html?id=om-tarphe">Om Tarphe</a></li>
+        <li><a href="workshop-detail.html?id=ritu-hariyani">Ritu Hariyani</a></li>
+        <li><a href="workshop-detail.html?id=divyanshi-singhvi">Divyanshi Singhvi</a></li>
+        <li><a href="workshop-detail.html?id=hridhay-khubchandani">Hridhay Khubchandani</a></li>
+        <li><a href="workshop-detail.html?id=aajanachle">Aajanachle</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-col-title">Contact</p>
+      <ul class="footer-links">
+        <li><a href="#">Add WhatsApp</a></li>
+        <li><a href="#">Add Email</a></li>
+        <li><a href="#">Add Instagram</a></li>
+        <li><a href="contact.html">Contact Page</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 The Happening Space · Surat</span>
+    <span>Made with ♥ for the dance community</span>
+    <a href="admin.html" style="color:rgba(245,245,240,0.15);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#bc1f2e'" onmouseout="this.style.color='rgba(245,245,240,0.15)'">Admin</a>
+  </div>
+</footer>
+
+<script>
+// Cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cursor.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;
+});
+(function animRing(){
+  rx+=(mx-rx)*0.14; ry+=(my-ry)*0.14;
+  ring.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+  requestAnimationFrame(animRing);
+})();
+document.addEventListener('mouseleave',()=>{cursor.style.opacity='0';ring.style.opacity='0'});
+document.addEventListener('mouseenter',()=>{cursor.style.opacity='1';ring.style.opacity='1'});
+
+// Mobile menu
+function toggleMenu(){
+  const overlay = document.getElementById('navOverlay');
+  const burger = document.getElementById('hamburger');
+  const isOpen = overlay.classList.toggle('open');
+  burger.classList.toggle('open', isOpen);
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+}
+// Close overlay on link click
+document.querySelectorAll('.nav-overlay-links a').forEach(a=>{
+  a.addEventListener('click',()=>{
+    document.getElementById('navOverlay').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+    document.body.style.overflow='';
+  });
+});
+// Close on Escape
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.getElementById('navOverlay').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+    document.body.style.overflow='';
+  }
+});
+
+// Scroll reveal
+const obs = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.style.opacity='1';
+      e.target.style.transform='translateY(0)';
+    }
+  });
+},{threshold:0.1});
+
+document.querySelectorAll('.batch-card,.stat-item,.info-feature').forEach(el=>{
+  el.style.opacity='0';
+  el.style.transform='translateY(24px)';
+  el.style.transition='opacity 0.6s ease, transform 0.6s ease';
+  obs.observe(el);
+});
+</script>
+
+<!-- FIREBASE — load workshops dynamically -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCvGMYRUhDAr4r2zoTbnRJ3PiCwhCWxLFs",
+  authDomain: "the-happening-space.firebaseapp.com",
+  projectId: "the-happening-space",
+  storageBucket: "the-happening-space.firebasestorage.app",
+  messagingSenderId: "834905576967",
+  appId: "1:834905576967:web:b16776452b9111b6483ca2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+async function loadWorkshops() {
+  const grid = document.getElementById('workshopsGrid');
+  try {
+    const snap = await getDocs(collection(db,'workshops'));
+    const all  = snap.docs.map(d=>({id:d.id,...d.data()}));
+    // Only show active or full workshops
+    const visible = all.filter(w => w.status==='active' || w.status==='full');
+    visible.sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+
+    if(!visible.length){
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:rgba(245,245,240,0.3);font-size:0.85rem;letter-spacing:0.1em;text-transform:uppercase">No upcoming workshops right now. Check back soon!</div>';
+      return;
+    }
+
+    grid.innerHTML = visible.map(w => {
+      const slots    = w.slots||[];
+      const packages = w.packages||[];
+      const minPrice = packages.length ? Math.min(...packages.map(p=>parseInt(p.price)||0)) : 0;
+      const firstDate= slots[0]?.date || 'Date TBA';
+      const firstTime= slots[0]?.time || '';
+      const isFull   = w.status==='full';
+
+      // Poster — image or gradient
+      const posterStyle = w.poster && w.poster.length > 10
+        ? `background-image:url('${w.poster}');background-size:cover;background-position:center;width:100%;height:100%`
+        : `background:${w.posterBg||'linear-gradient(145deg,#1a0407,#bc1f2e)'};width:100%;height:100%`;
+
+      return `
+        <div class="workshop-card" style="opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease">
+          ${isFull ? '<span class="card-tag" style="background:#666">Full</span>' : ''}
+          <div class="card-poster-wrap">
+            <div class="card-poster">
+              <div style="${posterStyle}"></div>
+              <div class="card-poster-label">
+                <p class="card-artist">${w.artist||'—'}</p>
+                <p class="card-style">${w.style||'—'}</p>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-date-row">
+              <span class="card-date">${firstDate}${firstTime?' · '+firstTime:''}</span>
+              <span class="card-price">₹${minPrice.toLocaleString('en-IN')}</span>
+            </div>
+            <a href="workshop-detail.html?id=${w.id}" class="card-enroll" ${isFull?'style="background:#555;pointer-events:none"':''}>
+              ${isFull ? 'Fully Booked' : 'Enroll Now'}
+              <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>`;
+    }).join('');
+
+    // Animate cards in
+    grid.querySelectorAll('.workshop-card').forEach((el,i) => {
+      setTimeout(()=>{
+        el.style.opacity='1';
+        el.style.transform='translateY(0)';
+      }, i*100);
+    });
+
+  } catch(e) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:rgba(245,245,240,0.3);font-size:0.85rem">Could not load workshops. Please refresh.</div>';
+  }
+}
+
+loadWorkshops();
+</script>
+</body>
+</html>
