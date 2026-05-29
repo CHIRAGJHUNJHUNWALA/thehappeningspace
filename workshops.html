@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshops — The Happening Space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{cursor:none!important}
+:root{
+  --red:#bc1f2e;--red-dark:#8f1520;--red-dim:rgba(188,31,46,0.1);
+  --black:#0a0a0a;--off-black:#111;--card-bg:#161616;
+  --border:rgba(255,255,255,0.08);--border-red:rgba(188,31,46,0.4);
+  --text:#f5f5f0;--text-muted:rgba(245,245,240,0.45);--text-mid:rgba(245,245,240,0.7);
+  --yellow:#f5e642;--green:#6aaf7e;--orange:#e8863a;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--text);font-family:'Syne',sans-serif;overflow-x:hidden}
+.cursor{position:fixed;width:12px;height:12px;background:var(--red);border-radius:50%;pointer-events:none;z-index:99999;top:0;left:0;transform:translate(-50%,-50%);transition:opacity 0.2s}
+.cursor-ring{position:fixed;width:38px;height:38px;border:2px solid rgba(188,31,46,0.75);border-radius:50%;pointer-events:none;z-index:99998;top:0;left:0;transform:translate(-50%,-50%)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;pointer-events:all}
+.logo-box{width:36px;height:36px;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff;flex-shrink:0}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:0.1em;color:var(--text);line-height:1}
+.logo-text span{color:var(--red)}
+.hamburger{display:flex;flex-direction:column;justify-content:center;gap:6px;width:44px;height:44px;pointer-events:all;background:rgba(10,10,10,0.7);backdrop-filter:blur(10px);border:1px solid var(--border);padding:12px;z-index:300;position:relative;transition:border-color 0.3s}
+.hamburger:hover{border-color:var(--red)}
+.hamburger span{display:block;width:20px;height:1.5px;background:var(--text);transition:transform 0.35s ease,opacity 0.25s ease,width 0.3s ease;transform-origin:center}
+.hamburger.open span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;width:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+.nav-overlay{position:fixed;inset:0;z-index:250;background:rgba(10,10,10,0.97);display:flex;flex-direction:column;justify-content:center;padding:4rem 3rem;opacity:0;pointer-events:none;transition:opacity 0.4s ease;backdrop-filter:blur(20px)}
+.nav-overlay.open{opacity:1;pointer-events:all}
+.nav-overlay-label{font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--text-muted);margin-bottom:2.5rem;display:flex;align-items:center;gap:0.75rem}
+.nav-overlay-label::before{content:'';width:24px;height:1px;background:var(--text-muted)}
+.nav-overlay-links{list-style:none;display:flex;flex-direction:column;gap:0}
+.nav-overlay-links li{border-bottom:1px solid var(--border);overflow:hidden;transform:translateY(20px);opacity:0;transition:transform 0.4s ease,opacity 0.4s ease}
+.nav-overlay.open .nav-overlay-links li:nth-child(1){transform:translateY(0);opacity:1;transition-delay:0.08s}
+.nav-overlay.open .nav-overlay-links li:nth-child(2){transform:translateY(0);opacity:1;transition-delay:0.13s}
+.nav-overlay.open .nav-overlay-links li:nth-child(3){transform:translateY(0);opacity:1;transition-delay:0.18s}
+.nav-overlay.open .nav-overlay-links li:nth-child(4){transform:translateY(0);opacity:1;transition-delay:0.23s}
+.nav-overlay.open .nav-overlay-links li:nth-child(5){transform:translateY(0);opacity:1;transition-delay:0.28s}
+.nav-overlay.open .nav-overlay-links li:nth-child(6){transform:translateY(0);opacity:1;transition-delay:0.33s}
+.nav-overlay-links a{display:flex;align-items:center;justify-content:space-between;text-decoration:none;padding:1.1rem 0;font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,6vw,3.8rem);letter-spacing:0.04em;color:var(--text);transition:color 0.2s,padding-left 0.25s;line-height:1}
+.nav-overlay-links a:hover{color:var(--red);padding-left:0.75rem}
+.link-num{font-family:'Syne',sans-serif;font-size:0.7rem;letter-spacing:0.15em;color:var(--text-muted);font-weight:400;align-self:flex-start;margin-top:0.4rem}
+.nav-overlay-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:2.5rem;flex-wrap:wrap;gap:1rem}
+.nav-overlay-address{font-size:0.75rem;color:var(--text-muted);line-height:1.6;font-style:normal}
+.nav-overlay-social{display:flex;gap:0.75rem}
+.nav-social-btn{width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);text-decoration:none;font-size:0.7rem;font-weight:700;transition:border-color 0.2s,color 0.2s}
+.nav-social-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* PAGE HERO */
+.page-hero{padding:8rem 2rem 4rem;position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.page-hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0a0a0a 0%,#1a0608 60%,#0a0a0a 100%);z-index:0}
+.page-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(188,31,46,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(188,31,46,0.04) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.page-hero-content{position:relative;z-index:1;max-width:1200px;margin:0 auto}
+.page-eyebrow{font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:1rem;display:flex;align-items:center;gap:0.75rem}
+.page-eyebrow::before{content:'';width:24px;height:1px;background:var(--red)}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,10vw,8rem);line-height:0.9;letter-spacing:0.03em;color:var(--text);margin-bottom:1rem}
+.page-title span{color:var(--red)}
+.page-sub{font-size:0.95rem;color:var(--text-muted);font-weight:300;max-width:480px;line-height:1.7}
+
+/* FILTER TABS */
+.filters{padding:2rem 2rem 0;max-width:1200px;margin:0 auto;display:flex;gap:0.5rem;flex-wrap:wrap}
+.filter-btn{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:0.45rem 1rem;font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;transition:all 0.2s}
+.filter-btn:hover{border-color:var(--border-red);color:var(--text)}
+.filter-btn.active{background:var(--red);border-color:var(--red);color:#fff}
+
+/* WORKSHOP LIST */
+.workshops-list{padding:2rem;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:1.5rem;padding-bottom:6rem}
+
+/* WORKSHOP CARD — large list style */
+.ws-card{background:var(--card-bg);border:1px solid var(--border);overflow:hidden;transition:border-color 0.3s;display:grid;grid-template-columns:320px 1fr;position:relative}
+.ws-card:hover{border-color:rgba(255,255,255,0.15)}
+.ws-card.status-full{border-color:rgba(232,134,58,0.3)}
+.ws-card.status-cancelled{opacity:0.6}
+
+/* STATUS BANNER */
+.status-banner{position:absolute;top:0;left:0;right:0;z-index:10;padding:0.35rem 1rem;font-size:0.62rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;font-family:'Syne',sans-serif;text-align:center}
+.banner-active{display:none}
+.banner-full{background:var(--orange);color:#fff}
+.banner-cancelled{background:#444;color:#fff}
+.banner-soldout{background:var(--red);color:#fff}
+
+/* POSTER SIDE */
+.ws-poster{position:relative;min-height:320px;overflow:hidden}
+.ws-poster-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform 0.5s ease}
+.ws-card:hover .ws-poster-bg{transform:scale(1.05)}
+.ws-poster-overlay{position:absolute;inset:0;background:linear-gradient(to right,transparent 60%,var(--card-bg))}
+.ws-poster-initials{position:absolute;bottom:1.25rem;left:1.25rem;font-family:'Bebas Neue',sans-serif;font-size:4rem;color:rgba(255,255,255,0.12);letter-spacing:0.05em;line-height:1;user-select:none}
+
+/* INFO SIDE */
+.ws-info{padding:2rem;display:flex;flex-direction:column;gap:0}
+.ws-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.25rem}
+.ws-artist{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:0.04em;color:var(--text);line-height:0.95}
+.ws-style{font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--red);margin-top:0.4rem}
+.ws-price-box{text-align:right;flex-shrink:0}
+.ws-price-from{font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)}
+.ws-price{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--yellow);letter-spacing:0.04em;line-height:1}
+
+.ws-desc{font-size:0.85rem;color:var(--text-muted);font-weight:300;line-height:1.7;margin-bottom:1.5rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* SLOTS */
+.ws-slots{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.5rem}
+.ws-slot{display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.85rem;background:rgba(255,255,255,0.03);border:1px solid var(--border);font-size:0.8rem}
+.ws-slot-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+.ws-slot-dot.low{background:var(--orange)}
+.ws-slot-dot.none{background:var(--red)}
+.ws-slot-info{flex:1}
+.ws-slot-date{color:var(--text);font-weight:500}
+.ws-slot-time{color:var(--text-muted);margin-left:0.5rem}
+.ws-slot-song{color:var(--yellow);font-size:0.72rem;margin-left:0.5rem}
+.ws-slot-spots{font-size:0.7rem;color:var(--text-muted);white-space:nowrap}
+.ws-slot-spots.low{color:var(--orange)}
+.ws-slot-spots.none{color:var(--red)}
+
+/* BIO */
+.ws-bio{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem;padding:0.75rem;background:rgba(255,255,255,0.02);border-left:2px solid var(--border-red)}
+.ws-bio-avatar{width:36px;height:36px;border:1px solid var(--border-red);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:0.85rem;color:var(--red);flex-shrink:0}
+.ws-bio-text{font-size:0.78rem;color:var(--text-muted);font-weight:300;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ACTIONS */
+.ws-actions{display:flex;gap:0.75rem;align-items:center;margin-top:auto}
+.btn-enroll{background:var(--red);color:#fff;border:none;padding:0.85rem 2rem;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;transition:background 0.2s}
+.btn-enroll:hover{background:var(--red-dark)}
+.btn-enroll svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5}
+.btn-enroll.disabled{background:#333;color:#666;pointer-events:none}
+.ws-packages{display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center}
+.ws-pkg-tag{font-size:0.68rem;color:var(--text-muted);border:1px solid var(--border);padding:0.25rem 0.6rem;font-weight:500}
+.ws-pkg-tag strong{color:var(--text)}
+
+/* LOADING */
+.loading-screen{min-height:50vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+.loading-spinner{width:32px;height:32px;border:2px solid rgba(188,31,46,0.2);border-top-color:var(--red);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted)}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:5rem 2rem;color:var(--text-muted)}
+.empty-state h3{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--text);margin-bottom:0.5rem;letter-spacing:0.04em}
+.empty-state p{font-size:0.88rem;font-weight:300}
+
+@media(max-width:768px){
+  .ws-card{grid-template-columns:1fr}
+  .ws-poster{min-height:200px}
+  .ws-poster-overlay{background:linear-gradient(to top,var(--card-bg) 0%,transparent 60%)}
+  .ws-info{padding:1.25rem}
+  *{cursor:auto!important}
+  nav{padding:1rem 1.25rem}
+  .page-hero{padding:7rem 1.25rem 3rem}
+  .filters{padding:1.5rem 1.25rem 0}
+  .workshops-list{padding:1.5rem 1.25rem 5rem}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-box">TH</div>
+    <div class="logo-text">The <span>Happening</span><br>Space</div>
+  </a>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="nav-overlay" id="navOverlay">
+  <div>
+    <p class="nav-overlay-label">Menu</p>
+    <ul class="nav-overlay-links">
+      <li><a href="index.html"><span>Home</span><span class="link-num">01</span></a></li>
+      <li><a href="workshops.html"><span>Workshops</span><span class="link-num">02</span></a></li>
+      <li><a href="batches.html"><span>Regular Batches</span><span class="link-num">03</span></a></li>
+      <li><a href="studio-booking.html"><span>Studio Booking</span><span class="link-num">04</span></a></li>
+      <li><a href="about.html"><span>About Us</span><span class="link-num">05</span></a></li>
+      <li><a href="contact.html"><span>Contact Us</span><span class="link-num">06</span></a></li>
+    </ul>
+    <div class="nav-overlay-bottom">
+      <address class="nav-overlay-address">311 – International Wealth Center<br>VIP Road, Surat, Gujarat</address>
+      <div class="nav-overlay-social">
+        <a href="#" class="nav-social-btn">IG</a>
+        <a href="#" class="nav-social-btn">YT</a>
+        <a href="#" class="nav-social-btn">WA</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-content">
+    <p class="page-eyebrow">The Happening Space</p>
+    <h1 class="page-title">ALL <span>WORK</span><br>SHOPS</h1>
+    <p class="page-sub">Led by the best artists in the game. Every workshop is a chance to move, learn, and connect.</p>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <button class="filter-btn active" onclick="filterWs('all',this)">All</button>
+  <button class="filter-btn" onclick="filterWs('active',this)">Active</button>
+  <button class="filter-btn" onclick="filterWs('full',this)">Sold Out</button>
+  <button class="filter-btn" onclick="filterWs('cancelled',this)">Cancelled</button>
+</div>
+
+<!-- WORKSHOP LIST -->
+<div class="workshops-list" id="workshopsList">
+  <div class="loading-screen">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Loading Workshops…</p>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCvGMYRUhDAr4r2zoTbnRJ3PiCwhCWxLFs",
+  authDomain: "the-happening-space.firebaseapp.com",
+  projectId: "the-happening-space",
+  storageBucket: "the-happening-space.firebasestorage.app",
+  messagingSenderId: "834905576967",
+  appId: "1:834905576967:web:b16776452b9111b6483ca2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+let allWorkshops = [];
+let currentFilter = 'all';
+
+async function load() {
+  try {
+    const snap = await getDocs(collection(db,'workshops'));
+    allWorkshops = snap.docs
+      .map(d=>({id:d.id,...d.data()}))
+      .filter(w => w.status !== 'completed') // hide completed
+      .sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+    render();
+  } catch(e) {
+    document.getElementById('workshopsList').innerHTML =
+      '<div class="empty-state"><h3>Could not load</h3><p>Please refresh the page.</p></div>';
+  }
+}
+
+function render() {
+  const list = document.getElementById('workshopsList');
+  const filtered = currentFilter==='all'
+    ? allWorkshops
+    : allWorkshops.filter(w=>w.status===currentFilter);
+
+  if(!filtered.length){
+    list.innerHTML = '<div class="empty-state"><h3>No Workshops</h3><p>Nothing in this category right now. Check back soon.</p></div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(w => {
+    const slots    = w.slots||[];
+    const packages = w.packages||[];
+    const minPrice = packages.length ? Math.min(...packages.map(p=>parseInt(p.price)||0)) : 0;
+    const maxPrice = packages.length ? Math.max(...packages.map(p=>parseInt(p.price)||0)) : 0;
+    const status   = w.status||'active';
+
+    // Poster
+    const posterStyle = w.poster && w.poster.length > 10
+      ? `background-image:url('${w.poster}');background-size:cover;background-position:center`
+      : `background:${w.posterBg||'linear-gradient(145deg,#1a0407,#bc1f2e)'}`;
+
+    // Status banner
+    const bannerHTML = {
+      full:      '<div class="status-banner banner-full">Sold Out</div>',
+      cancelled: '<div class="status-banner banner-cancelled">Cancelled</div>',
+      active:    '',
+    }[status] || '';
+
+    // Slots
+    const slotsHTML = slots.map(s => {
+      const sp   = parseInt(s.spots)||0;
+      const tot  = parseInt(s.totalSpots)||20;
+      const pct  = tot > 0 ? sp/tot : 1;
+      const dotCls = sp===0?'none':pct<=0.25?'low':'';
+      const spotsTxt = sp===0?'Full':sp<=5?`⚡ ${sp} left`:`${sp} spots`;
+      const spotsCls = sp===0?'none':sp<=5?'low':'';
+      return `<div class="ws-slot">
+        <div class="ws-slot-dot ${dotCls}"></div>
+        <div class="ws-slot-info">
+          <span class="ws-slot-date">${s.date}</span>
+          <span class="ws-slot-time">${s.time}</span>
+          ${s.song?`<span class="ws-slot-song">♪ ${s.song}</span>`:''}
+        </div>
+        <span class="ws-slot-spots ${spotsCls}">${spotsTxt}</span>
+      </div>`;
+    }).join('');
+
+    // Packages
+    const pkgsHTML = packages.map(p =>
+      `<span class="ws-pkg-tag"><strong>₹${parseInt(p.price||0).toLocaleString('en-IN')}</strong> ${p.name}</span>`
+    ).join('');
+
+    // Enroll button
+    const isEnrollable = status === 'active';
+    const btnHTML = isEnrollable
+      ? `<a href="workshop-detail.html?id=${w.id}" class="btn-enroll">
+          Enroll Now <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+         </a>`
+      : `<span class="btn-enroll disabled">${status==='full'?'Sold Out':'Cancelled'}</span>`;
+
+    return `
+      <div class="ws-card status-${status}" style="animation:fadeUp 0.5s ease both">
+        ${bannerHTML}
+        <div class="ws-poster">
+          <div class="ws-poster-bg" style="${posterStyle}"></div>
+          <div class="ws-poster-overlay"></div>
+          <div class="ws-poster-initials">${w.initials||''}</div>
+        </div>
+        <div class="ws-info">
+          <div class="ws-top">
+            <div>
+              <h2 class="ws-artist">${w.artist||'—'}</h2>
+              <p class="ws-style">${w.style||''}</p>
+            </div>
+            <div class="ws-price-box">
+              <p class="ws-price-from">from</p>
+              <p class="ws-price">₹${minPrice.toLocaleString('en-IN')}</p>
+            </div>
+          </div>
+          <p class="ws-desc">${w.desc||''}</p>
+          <div class="ws-bio">
+            <div class="ws-bio-avatar">${w.initials||'—'}</div>
+            <p class="ws-bio-text">${w.bio||''}</p>
+          </div>
+          <div class="ws-slots">${slotsHTML||'<p style="font-size:0.8rem;color:var(--text-muted)">Dates TBA</p>'}</div>
+          <div class="ws-actions">
+            ${btnHTML}
+            <div class="ws-packages">${pkgsHTML}</div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+window.filterWs = function(f, el){
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+};
+
+// NAV
+window.toggleMenu = function(){
+  const o=document.getElementById('navOverlay');
+  const b=document.getElementById('hamburger');
+  const open=o.classList.toggle('open');
+  b.classList.toggle('open',open);
+  document.body.style.overflow=open?'hidden':'';
+};
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.getElementById('navOverlay').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+    document.body.style.overflow='';
+  }
+});
+
+// CURSOR
+const cursor=document.getElementById('cursor');
+const ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;});
+(function animRing(){rx+=(mx-rx)*0.14;ry+=(my-ry)*0.14;ring.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;requestAnimationFrame(animRing);})();
+document.addEventListener('mouseleave',()=>{cursor.style.opacity='0';ring.style.opacity='0';});
+document.addEventListener('mouseenter',()=>{cursor.style.opacity='1';ring.style.opacity='1';});
+
+load();
+</script>
+
+<style>
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</body>
+</html>
