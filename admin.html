@@ -309,21 +309,21 @@ tr:hover td{background:rgba(255,255,255,0.02)}
         </div>
         <!-- Month picker -->
         <div id="monthPicker" style="display:flex;gap:0.5rem;align-items:center">
-          <select id="pickMonth" onchange="applyMonthPick()" style="background:var(--bg3);border:1px solid var(--border2);padding:0.4rem 0.75rem;color:var(--text);font-family:DM Sans,sans-serif;font-size:0.82rem;outline:none">
+          <select id="pickMonth" onchange="applyMonthPick()" style="background:var(--bg3);border:1px solid var(--border2);padding:0.5rem 0.85rem;color:var(--text);font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:600;outline:none;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(245,245,240,0.4)'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 0.75rem center;padding-right:2rem">
             <option value="0">January</option><option value="1">February</option><option value="2">March</option>
             <option value="3">April</option><option value="4">May</option><option value="5">June</option>
             <option value="6">July</option><option value="7">August</option><option value="8">September</option>
             <option value="9">October</option><option value="10">November</option><option value="11">December</option>
           </select>
-          <select id="pickYear" onchange="applyMonthPick()" style="background:var(--bg3);border:1px solid var(--border2);padding:0.4rem 0.75rem;color:var(--text);font-family:DM Sans,sans-serif;font-size:0.82rem;outline:none">
+          <select id="pickYear" onchange="applyMonthPick()" style="background:var(--bg3);border:1px solid var(--border2);padding:0.5rem 0.85rem;color:var(--text);font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:600;outline:none;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(245,245,240,0.4)'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 0.75rem center;padding-right:2rem">
             <option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option>
           </select>
         </div>
         <!-- Custom range -->
         <div id="customPicker" style="display:none;gap:0.5rem;align-items:center;flex-wrap:wrap">
-          <input type="date" id="customFrom" onchange="applyCustom()" style="background:var(--bg3);border:1px solid var(--border2);padding:0.4rem 0.75rem;color:var(--text);font-family:DM Sans,sans-serif;font-size:0.82rem;outline:none">
+          <input type="date" id="customFrom" onchange="applyCustom()" style="background:var(--bg3);border:1px solid var(--border2);padding:0.5rem 0.85rem;color:var(--text);font-family:'Syne',sans-serif;font-size:0.78rem;outline:none;color-scheme:dark">
           <span style="color:var(--muted);font-size:0.8rem">to</span>
-          <input type="date" id="customTo" onchange="applyCustom()" style="background:var(--bg3);border:1px solid var(--border2);padding:0.4rem 0.75rem;color:var(--text);font-family:DM Sans,sans-serif;font-size:0.82rem;outline:none">
+          <input type="date" id="customTo" onchange="applyCustom()" style="background:var(--bg3);border:1px solid var(--border2);padding:0.5rem 0.85rem;color:var(--text);font-family:'Syne',sans-serif;font-size:0.78rem;outline:none;color-scheme:dark">
         </div>
         <span id="periodLabel" style="font-size:0.72rem;color:var(--text-muted);margin-left:auto;font-family:Syne,sans-serif"></span>
       </div>
@@ -694,9 +694,9 @@ function setPeriod(p, el){
   document.querySelectorAll('#periodTabs .filter-tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
 
-  const now   = new Date();
-  const mp    = document.getElementById('monthPicker');
-  const cp    = document.getElementById('customPicker');
+  const now = new Date();
+  const mp  = document.getElementById('monthPicker');
+  const cp  = document.getElementById('customPicker');
 
   if(p==='month'){
     mp.style.display='flex'; cp.style.display='none';
@@ -725,6 +725,7 @@ function setPeriod(p, el){
     document.getElementById('periodLabel').textContent = 'Select date range';
   }
 }
+window.setPeriod = setPeriod;
 
 function applyMonthPick(){
   const m = parseInt(document.getElementById('pickMonth').value);
@@ -735,6 +736,7 @@ function applyMonthPick(){
   document.getElementById('periodLabel').textContent = monthNames[m] + ' ' + y;
   renderDashboard();
 }
+window.applyMonthPick = applyMonthPick;
 
 function applyCustom(){
   const from = document.getElementById('customFrom').value;
@@ -746,6 +748,7 @@ function applyCustom(){
   document.getElementById('periodLabel').textContent = from + ' → ' + to;
   renderDashboard();
 }
+window.applyCustom = applyCustom;
 
 function getFilteredRegs(){
   if(!filterFrom && !filterTo) return registrations;
