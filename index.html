@@ -75,6 +75,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1.25rem 2rem;display
 .nav-overlay.open .nav-overlay-links li:nth-child(4){transform:translateY(0);opacity:1;transition-delay:0.23s}
 .nav-overlay.open .nav-overlay-links li:nth-child(5){transform:translateY(0);opacity:1;transition-delay:0.28s}
 .nav-overlay.open .nav-overlay-links li:nth-child(6){transform:translateY(0);opacity:1;transition-delay:0.33s}
+.nav-overlay.open .nav-overlay-links li:nth-child(7){transform:translateY(0);opacity:1;transition-delay:0.38s}
 
 /* ── HERO ── */
 .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 2rem 5rem;position:relative;overflow:hidden}
@@ -188,7 +189,7 @@ section{padding:5rem 2rem}
 
 /* ── FOOTER ── */
 footer{background:var(--off-black);border-top:1px solid var(--border);padding:4rem 2rem 2rem}
-.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
 .footer-brand{}
 .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:0.1em;color:var(--text);margin-bottom:0.75rem}
 .footer-logo span{color:var(--red)}
@@ -252,6 +253,7 @@ footer{background:var(--off-black);border-top:1px solid var(--border);padding:4r
       <li><a href="studio-booking.html"><span>Studio Booking</span><span class="link-num">04</span></a></li>
       <li><a href="about.html"><span>About Us</span><span class="link-num">05</span></a></li>
       <li><a href="contact.html"><span>Contact Us</span><span class="link-num">06</span></a></li>
+      <li><a href="admin.html" style="opacity:0.4;font-size:clamp(1rem,3vw,1.8rem)"><span>Admin Login</span><span class="link-num" style="font-size:0.6rem">07</span></a></li>
     </ul>
     <div class="nav-overlay-bottom">
       <address class="nav-overlay-address">
@@ -338,57 +340,38 @@ footer{background:var(--off-black);border-top:1px solid var(--border);padding:4r
 <section class="batches-section" id="batches">
   <p class="section-eyebrow">Ongoing</p>
   <h2 class="section-title">REGULAR <span class="red">BATCHES</span></h2>
-  <p class="section-sub">Consistent training, real growth. Join a batch that fits your schedule and level.</p>
+  <p class="section-sub">Consistent training, real growth. Mon · Tue · Wed every week.</p>
   <div class="batches-grid">
-
-    <div class="batch-card">
-      <div class="batch-poster">
-        <div class="batch-poster-inner" style="background:linear-gradient(145deg,#1a0407,#bc1f2e)"></div>
-        <div class="batch-poster-content">
-          <p class="batch-name">Hip-Hop Basics</p>
-          <p class="batch-level">Beginner · All Ages</p>
-        </div>
-      </div>
-      <div class="batch-body">
-        <div class="batch-info">
-          <div class="batch-info-item"><strong>Mon · Wed · Fri</strong>6:00 PM – 7:30 PM</div>
-          <div class="batch-info-item"><strong>Add Fee</strong>per month</div>
-        </div>
-        <a href="batches.html" class="batch-join">Join Batch →</a>
-      </div>
-    </div>
-
-    <div class="batch-card">
-      <div class="batch-poster">
-        <div class="batch-poster-inner" style="background:linear-gradient(145deg,#050a1a,#1a3a6b)"></div>
-        <div class="batch-poster-content">
-          <p class="batch-name">Contemporary</p>
-          <p class="batch-level">Intermediate · Teen+</p>
-        </div>
-      </div>
-      <div class="batch-body">
-        <div class="batch-info">
-          <div class="batch-info-item"><strong>Tue · Thu · Sat</strong>7:30 PM – 9:00 PM</div>
-          <div class="batch-info-item"><strong>Add Fee</strong>per month</div>
-        </div>
-        <a href="batches.html" class="batch-join">Join Batch →</a>
-      </div>
-    </div>
 
     <div class="batch-card">
       <div class="batch-poster">
         <div class="batch-poster-inner" style="background:linear-gradient(145deg,#0e0514,#4b1a7a)"></div>
         <div class="batch-poster-content">
-          <p class="batch-name">Bollywood Fusion</p>
-          <p class="batch-level">All Levels · Adults</p>
+          <p class="batch-name">Ladies Batch</p>
+          <p class="batch-level">by Divyanshi Singhvi</p>
         </div>
       </div>
       <div class="batch-body">
         <div class="batch-info">
-          <div class="batch-info-item"><strong>Mon · Wed</strong>5:00 PM – 6:30 PM</div>
-          <div class="batch-info-item"><strong>Add Fee</strong>per month</div>
+          <div class="batch-info-item"><strong>Mon · Tue · Wed</strong>12:00 PM – 1:00 PM</div>
         </div>
-        <a href="batches.html" class="batch-join">Join Batch →</a>
+        <a href="batches.html" class="batch-join">Enquire →</a>
+      </div>
+    </div>
+
+    <div class="batch-card">
+      <div class="batch-poster">
+        <div class="batch-poster-inner" style="background:linear-gradient(145deg,#1a0407,#bc1f2e)"></div>
+        <div class="batch-poster-content">
+          <p class="batch-name">Beginners Batch</p>
+          <p class="batch-level">by Divyanshi Singhvi</p>
+        </div>
+      </div>
+      <div class="batch-body">
+        <div class="batch-info">
+          <div class="batch-info-item"><strong>Mon · Tue · Wed</strong>4:00 PM – 5:00 PM</div>
+        </div>
+        <a href="batches.html" class="batch-join">Enquire →</a>
       </div>
     </div>
 
@@ -396,16 +379,47 @@ footer{background:var(--off-black);border-top:1px solid var(--border);padding:4r
       <div class="batch-poster">
         <div class="batch-poster-inner" style="background:linear-gradient(145deg,#050f08,#0f5c2a)"></div>
         <div class="batch-poster-content">
-          <p class="batch-name">Advanced Batch</p>
-          <p class="batch-level">Advanced · Audition Required</p>
+          <p class="batch-name">Intermediate Batch</p>
+          <p class="batch-level">by Hriday Khubchandani</p>
         </div>
       </div>
       <div class="batch-body">
         <div class="batch-info">
-          <div class="batch-info-item"><strong>Daily</strong>8:00 AM – 10:00 AM</div>
-          <div class="batch-info-item"><strong>Add Fee</strong>per month</div>
+          <div class="batch-info-item"><strong>Mon · Tue · Wed</strong>6:00 PM – 7:00 PM</div>
         </div>
-        <a href="batches.html" class="batch-join">Join Batch →</a>
+        <a href="batches.html" class="batch-join">Enquire →</a>
+      </div>
+    </div>
+
+    <div class="batch-card">
+      <div class="batch-poster">
+        <div class="batch-poster-inner" style="background:linear-gradient(145deg,#05080f,#1a3a6b)"></div>
+        <div class="batch-poster-content">
+          <p class="batch-name">Intermediate Batch</p>
+          <p class="batch-level">by Divyanshi Singhvi</p>
+        </div>
+      </div>
+      <div class="batch-body">
+        <div class="batch-info">
+          <div class="batch-info-item"><strong>Mon · Tue · Wed</strong>7:00 PM – 8:00 PM</div>
+        </div>
+        <a href="batches.html" class="batch-join">Enquire →</a>
+      </div>
+    </div>
+
+    <div class="batch-card">
+      <div class="batch-poster">
+        <div class="batch-poster-inner" style="background:linear-gradient(145deg,#1a0c05,#8b4513)"></div>
+        <div class="batch-poster-content">
+          <p class="batch-name">Intermediate Batch</p>
+          <p class="batch-level">by Ritu Hariyani (Aajanachle)</p>
+        </div>
+      </div>
+      <div class="batch-body">
+        <div class="batch-info">
+          <div class="batch-info-item"><strong>Mon · Tue · Wed</strong>8:00 PM – 9:00 PM</div>
+        </div>
+        <a href="batches.html" class="batch-join">Enquire →</a>
       </div>
     </div>
 
@@ -501,23 +515,12 @@ footer{background:var(--off-black);border-top:1px solid var(--border);padding:4r
       </ul>
     </div>
     <div>
-      <p class="footer-col-title">Workshops</p>
-      <ul class="footer-links">
-        <li><a href="workshop-detail.html?id=heet-samani">Heet Samani</a></li>
-        <li><a href="workshop-detail.html?id=om-tarphe">Om Tarphe</a></li>
-        <li><a href="workshop-detail.html?id=ritu-hariyani">Ritu Hariyani</a></li>
-        <li><a href="workshop-detail.html?id=divyanshi-singhvi">Divyanshi Singhvi</a></li>
-        <li><a href="workshop-detail.html?id=hridhay-khubchandani">Hridhay Khubchandani</a></li>
-        <li><a href="workshop-detail.html?id=aajanachle">Aajanachle</a></li>
-      </ul>
-    </div>
-    <div>
       <p class="footer-col-title">Contact</p>
       <ul class="footer-links">
-        <li><a href="#">Add WhatsApp</a></li>
-        <li><a href="#">Add Email</a></li>
-        <li><a href="#">Add Instagram</a></li>
-        <li><a href="contact.html">Contact Page</a></li>
+        <li><a href="https://wa.me/919057975755" target="_blank">WhatsApp — Workshops & Batches</a></li>
+        <li><a href="https://wa.me/919407392073" target="_blank">WhatsApp — Studio Booking</a></li>
+        <li><a href="mailto:thehappeningspaceths@gmail.com">thehappeningspaceths@gmail.com</a></li>
+        <li><a href="https://instagram.com/thehappeningspace_" target="_blank">@thehappeningspace_</a></li>
       </ul>
     </div>
   </div>
