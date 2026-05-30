@@ -302,7 +302,7 @@ tr:hover td{background:rgba(255,255,255,0.02)}
       <div class="ws-grid" id="dashWorkshops"></div>
       <div class="section-bar" style="margin-top:1rem"><span class="section-bar-title">Recent Registrations</span><button class="btn btn-outline btn-sm" onclick="showView('registrations')">View All</button></div>
       <div class="table-wrap">
-        <table><thead><tr><th>Name</th><th>Workshop</th><th>Package</th><th>Amount</th><th>Type</th><th>Time</th></tr></thead>
+        <table><thead><tr><th>Name</th><th>Phone</th><th>Workshop</th><th>Package</th><th>Slot</th><th>Song</th><th>Amount</th><th>Type</th><th>Time</th></tr></thead>
         <tbody id="dashRecentReg"></tbody></table>
       </div>
     </div>
@@ -663,13 +663,16 @@ function renderDashboard(){
   document.getElementById('dashRecentReg').innerHTML = recent.length
     ? recent.map(r=>`<tr>
         <td style="color:var(--text)">${r.name||'—'}</td>
+        <td>${r.phone||'—'}</td>
         <td>${r.workshop||'—'}</td>
         <td>${r.package||'—'}</td>
+        <td style="font-size:0.75rem">${r.slots||'—'}</td>
+        <td style="font-size:0.75rem;color:var(--yellow)">${getSongForReg(r)}</td>
         <td style="color:var(--yellow)">₹${parseFloat(r.amount_paid||0).toLocaleString('en-IN')}</td>
         <td>${payTypePill(r.payment_type)}</td>
         <td style="font-size:0.72rem;color:var(--muted)">${r.timestamp||'—'}</td>
       </tr>`).join('')
-    : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem">No registrations yet</td></tr>';
+    : '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem">No registrations yet</td></tr>';
 }
 
 function payTypePill(t){
@@ -1116,7 +1119,7 @@ const DELETE_PASSWORD = 'delete2025'; // ← change this password
 
 window.deleteRegistration = async function(regId, regName){
   const pass = prompt(`Enter admin password to delete registration for "${regName}":`);
-  if(pass === null) return; // cancelled
+  if(pass === null) return;
   if(pass !== DELETE_PASSWORD){
     showToast('Incorrect password — deletion cancelled','error');
     return;
@@ -1124,8 +1127,30 @@ window.deleteRegistration = async function(regId, regName){
   const confirm = window.confirm(`Are you sure you want to delete ${regName}'s registration? This cannot be undone.`);
   if(!confirm) return;
   try {
+    // Find the registration to get workshop + slot info before deleting
+    const reg = registrations.find(r => r.id === regId);
+
+    // Delete the registration
     await deleteDoc(doc(db,'registrations',regId));
-    showToast(`${regName}'s registration deleted`);
+
+    // Restore spots in the workshop
+    if(reg){
+      const w = workshops.find(x => x.artist === reg.workshop);
+      if(w && w.slots){
+        let updated = false;
+        w.slots.forEach(s => {
+          if((reg.slots||'').includes(s.date)){
+            s.spots = Math.min((parseInt(s.spots)||0) + 1, parseInt(s.totalSpots)||20);
+            updated = true;
+          }
+        });
+        if(updated){
+          await setDoc(doc(db,'workshops',w.id), w);
+        }
+      }
+    }
+
+    showToast(`${regName}'s registration deleted — spot restored`);
   } catch(e) {
     showToast('Failed to delete — try again','error');
   }
