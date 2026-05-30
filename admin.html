@@ -297,10 +297,41 @@ tr:hover td{background:rgba(255,255,255,0.02)}
           <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Workshop
         </button>
       </div>
+
+      <!-- DATE FILTER -->
+      <div style="background:var(--bg2);border:1px solid var(--border);padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+        <div class="filter-tabs" style="margin-bottom:0;flex-wrap:wrap" id="periodTabs">
+          <button class="filter-tab active" onclick="setPeriod('month',this)">This Month</button>
+          <button class="filter-tab" onclick="setPeriod('last',this)">Last Month</button>
+          <button class="filter-tab" onclick="setPeriod('year',this)">This Year</button>
+          <button class="filter-tab" onclick="setPeriod('all',this)">All Time</button>
+          <button class="filter-tab" onclick="setPeriod('custom',this)">Custom</button>
+        </div>
+        <!-- Month picker -->
+        <div id="monthPicker" style="display:flex;gap:0.5rem;align-items:center">
+          <select id="pickMonth" onchange="applyMonthPick()" style="background:var(--bg3);border:1px solid var(--border2);padding:0.4rem 0.75rem;color:var(--text);font-family:DM Sans,sans-serif;font-size:0.82rem;outline:none">
+            <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+            <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+            <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+            <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+          </select>
+          <select id="pickYear" onchange="applyMonthPick()" style="background:var(--bg3);border:1px solid var(--border2);padding:0.4rem 0.75rem;color:var(--text);font-family:DM Sans,sans-serif;font-size:0.82rem;outline:none">
+            <option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option>
+          </select>
+        </div>
+        <!-- Custom range -->
+        <div id="customPicker" style="display:none;gap:0.5rem;align-items:center;flex-wrap:wrap">
+          <input type="date" id="customFrom" onchange="applyCustom()" style="background:var(--bg3);border:1px solid var(--border2);padding:0.4rem 0.75rem;color:var(--text);font-family:DM Sans,sans-serif;font-size:0.82rem;outline:none">
+          <span style="color:var(--muted);font-size:0.8rem">to</span>
+          <input type="date" id="customTo" onchange="applyCustom()" style="background:var(--bg3);border:1px solid var(--border2);padding:0.4rem 0.75rem;color:var(--text);font-family:DM Sans,sans-serif;font-size:0.82rem;outline:none">
+        </div>
+        <span id="periodLabel" style="font-size:0.72rem;color:var(--text-muted);margin-left:auto;font-family:Syne,sans-serif"></span>
+      </div>
+
       <div class="stats-grid" id="dashStats"></div>
       <div class="section-bar"><span class="section-bar-title">Active Workshops</span><button class="btn btn-outline btn-sm" onclick="showView('workshops')">View All</button></div>
       <div class="ws-grid" id="dashWorkshops"></div>
-      <div class="section-bar" style="margin-top:1rem"><span class="section-bar-title">Recent Registrations</span><button class="btn btn-outline btn-sm" onclick="showView('registrations')">View All</button></div>
+      <div class="section-bar" style="margin-top:1rem"><span class="section-bar-title" id="recentRegTitle">Recent Registrations</span><button class="btn btn-outline btn-sm" onclick="showView('registrations')">View All</button></div>
       <div class="table-wrap">
         <table><thead><tr><th>Name</th><th>Phone</th><th>Workshop</th><th>Package</th><th>Slot</th><th>Song</th><th>Amount</th><th>Type</th><th>Time</th></tr></thead>
         <tbody id="dashRecentReg"></tbody></table>
@@ -591,6 +622,18 @@ if(sessionStorage.getItem('ths_auth')==='1'){
 async function initApp(){
   document.getElementById('dashDate').textContent =
     new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // Set default period to current month
+  const now = new Date();
+  document.getElementById('pickMonth').value = now.getMonth();
+  document.getElementById('pickYear').value  = now.getFullYear();
+  filterFrom = new Date(now.getFullYear(), now.getMonth(), 1);
+  filterTo   = new Date(now.getFullYear(), now.getMonth()+1, 0, 23, 59, 59);
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  setTimeout(()=>{
+    const lbl = document.getElementById('periodLabel');
+    if(lbl) lbl.textContent = monthNames[now.getMonth()] + ' ' + now.getFullYear();
+  }, 100);
   showToast('Loading data…');
   await Promise.all([listenWorkshops(), listenRegistrations()]);
 }
@@ -640,26 +683,117 @@ window.showView = function(id){
 };
 
 /* ══════════════════════════════════════
+   PERIOD FILTER
+══════════════════════════════════════ */
+let currentPeriod = 'month';
+let filterFrom    = null;
+let filterTo      = null;
+
+function setPeriod(p, el){
+  currentPeriod = p;
+  document.querySelectorAll('#periodTabs .filter-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+
+  const now   = new Date();
+  const mp    = document.getElementById('monthPicker');
+  const cp    = document.getElementById('customPicker');
+
+  if(p==='month'){
+    mp.style.display='flex'; cp.style.display='none';
+    document.getElementById('pickMonth').value = now.getMonth();
+    document.getElementById('pickYear').value  = now.getFullYear();
+    applyMonthPick();
+  } else if(p==='last'){
+    mp.style.display='flex'; cp.style.display='none';
+    const last = new Date(now.getFullYear(), now.getMonth()-1, 1);
+    document.getElementById('pickMonth').value = last.getMonth();
+    document.getElementById('pickYear').value  = last.getFullYear();
+    applyMonthPick();
+  } else if(p==='year'){
+    mp.style.display='none'; cp.style.display='none';
+    filterFrom = new Date(now.getFullYear(), 0, 1);
+    filterTo   = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+    document.getElementById('periodLabel').textContent = 'Year ' + now.getFullYear();
+    renderDashboard();
+  } else if(p==='all'){
+    mp.style.display='none'; cp.style.display='none';
+    filterFrom = null; filterTo = null;
+    document.getElementById('periodLabel').textContent = 'All Time';
+    renderDashboard();
+  } else if(p==='custom'){
+    mp.style.display='none'; cp.style.display='flex';
+    document.getElementById('periodLabel').textContent = 'Select date range';
+  }
+}
+
+function applyMonthPick(){
+  const m = parseInt(document.getElementById('pickMonth').value);
+  const y = parseInt(document.getElementById('pickYear').value);
+  filterFrom = new Date(y, m, 1);
+  filterTo   = new Date(y, m+1, 0, 23, 59, 59);
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('periodLabel').textContent = monthNames[m] + ' ' + y;
+  renderDashboard();
+}
+
+function applyCustom(){
+  const from = document.getElementById('customFrom').value;
+  const to   = document.getElementById('customTo').value;
+  if(!from||!to) return;
+  filterFrom = new Date(from);
+  filterTo   = new Date(to);
+  filterTo.setHours(23,59,59);
+  document.getElementById('periodLabel').textContent = from + ' → ' + to;
+  renderDashboard();
+}
+
+function getFilteredRegs(){
+  if(!filterFrom && !filterTo) return registrations;
+  return registrations.filter(r => {
+    // Use timestamp field to filter
+    const ts = r.timestamp || r.Timestamp || '';
+    if(!ts) return false;
+    try {
+      const d = new Date(ts);
+      if(filterFrom && d < filterFrom) return false;
+      if(filterTo   && d > filterTo)   return false;
+      return true;
+    } catch(e){ return false; }
+  });
+}
+
+/* ══════════════════════════════════════
    DASHBOARD
 ══════════════════════════════════════ */
 function renderDashboard(){
+  const filtered = getFilteredRegs();
   const active   = workshops.filter(w=>w.status==='active').length;
-  const revenue  = registrations.reduce((s,r)=>s+(parseFloat(r.amount_paid)||0),0);
-  const totalSp  = workshops.reduce((s,w)=>s+(w.slots||[]).reduce((ss,sl)=>ss+(parseInt(sl.totalSpots)||0),0),0);
-  const usedSp   = workshops.reduce((s,w)=>s+(w.slots||[]).reduce((ss,sl)=>ss+((parseInt(sl.totalSpots)||0)-(parseInt(sl.spots)||0)),0),0);
+  const revenue  = filtered.reduce((s,r)=>s+(parseFloat(r.amount_paid)||0),0);
+  const totalSp  = workshops.filter(w=>w.status==='active')
+                            .reduce((s,w)=>s+(w.slots||[]).reduce((ss,sl)=>ss+(parseInt(sl.totalSpots)||0),0),0);
+  const usedSp   = filtered.reduce((s,r)=>{
+    const count = (r.slots||'').split('|').length;
+    return s + count;
+  }, 0);
+  const periodLbl = document.getElementById('periodLabel')?.textContent || '';
 
   document.getElementById('dashStats').innerHTML = `
     <div class="stat-card"><p class="stat-label">Active Workshops</p><p class="stat-val red">${active}</p><p class="stat-meta">${workshops.length} total</p></div>
-    <div class="stat-card"><p class="stat-label">Total Registrations</p><p class="stat-val">${registrations.length}</p></div>
-    <div class="stat-card"><p class="stat-label">Revenue</p><p class="stat-val green">₹${revenue.toLocaleString('en-IN')}</p></div>
-    <div class="stat-card"><p class="stat-label">Spots Filled</p><p class="stat-val yellow">${usedSp}/${totalSp}</p></div>
+    <div class="stat-card"><p class="stat-label">Registrations${periodLbl?' · '+periodLbl:''}</p><p class="stat-val">${filtered.length}</p><p class="stat-meta">of ${registrations.length} all time</p></div>
+    <div class="stat-card"><p class="stat-label">Revenue${periodLbl?' · '+periodLbl:''}</p><p class="stat-val green">₹${revenue.toLocaleString('en-IN')}</p></div>
+    <div class="stat-card"><p class="stat-label">Spots Filled${periodLbl?' · '+periodLbl:''}</p><p class="stat-val yellow">${usedSp}/${totalSp}</p></div>
   `;
 
   const upcoming = workshops.filter(w=>w.status==='active').slice(0,3);
   document.getElementById('dashWorkshops').innerHTML = upcoming.length
     ? upcoming.map(wsCardHTML).join('') : '<p style="color:var(--muted);font-size:0.85rem">No active workshops.</p>';
 
-  const recent = registrations.slice(0,5);
+  if(document.getElementById('recentRegTitle')){
+    document.getElementById('recentRegTitle').textContent =
+      periodLbl ? `Registrations · ${periodLbl}` : 'Recent Registrations';
+  }
+
+  const recent = [...filtered].reverse().slice(0,10);
   document.getElementById('dashRecentReg').innerHTML = recent.length
     ? recent.map(r=>`<tr>
         <td style="color:var(--text)">${r.name||'—'}</td>
@@ -672,7 +806,7 @@ function renderDashboard(){
         <td>${payTypePill(r.payment_type)}</td>
         <td style="font-size:0.72rem;color:var(--muted)">${r.timestamp||'—'}</td>
       </tr>`).join('')
-    : '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem">No registrations yet</td></tr>';
+    : '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem">No registrations in this period</td></tr>';
 }
 
 function payTypePill(t){
@@ -689,7 +823,12 @@ function wsCardHTML(w){
   const slots    = w.slots||[];
   const packages = w.packages||[];
   const totalSp  = slots.reduce((s,sl)=>s+(parseInt(sl.totalSpots)||0),0);
-  const usedSp   = slots.reduce((s,sl)=>s+((parseInt(sl.totalSpots)||0)-(parseInt(sl.spots)||0)),0);
+  // Count actual registrations for this workshop
+  const wsRegs   = registrations.filter(r=>r.workshop===w.artist);
+  const usedSp   = wsRegs.reduce((s,r)=>{
+    const count = (r.slots||'').split('|').length;
+    return s + count;
+  }, 0);
   const pct      = totalSp>0 ? Math.round(usedSp/totalSp*100) : 0;
   const minPrice = packages.length ? Math.min(...packages.map(p=>parseInt(p.price)||0)) : 0;
   const statusPill = {active:'pill-green',full:'pill-red',cancelled:'pill-orange',completed:'pill-grey'}[w.status]||'pill-grey';
