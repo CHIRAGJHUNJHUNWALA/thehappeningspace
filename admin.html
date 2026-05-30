@@ -268,9 +268,6 @@ tr:hover td{background:rgba(255,255,255,0.02)}
       <div class="nav-item" onclick="showView('workshops')">
         <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>All Workshops
       </div>
-      <div class="nav-item" onclick="showView('workshops');setTimeout(openAddWorkshop,100)">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Add New Workshop
-      </div>
       <div class="nav-section-title">Students</div>
       <div class="nav-item" onclick="showView('registrations')">
         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -352,6 +349,7 @@ tr:hover td{background:rgba(255,255,255,0.02)}
         <button class="filter-tab" onclick="filterWorkshops('full',this)">Full</button>
         <button class="filter-tab" onclick="filterWorkshops('cancelled',this)">Cancelled</button>
         <button class="filter-tab" onclick="filterWorkshops('completed',this)">Completed</button>
+        <button class="filter-tab" onclick="filterWorkshops('draft',this)">Drafts</button>
       </div>
       <div class="ws-grid" id="workshopGrid"></div>
     </div>
@@ -449,7 +447,7 @@ tr:hover td{background:rgba(255,255,255,0.02)}
       <!-- PACKAGES -->
       <div class="slots-editor" style="margin-top:0.5rem">
         <div class="slots-editor-title">Packages / Pricing</div>
-        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 28px;gap:0.5rem;margin-bottom:0.4rem">
+        <div style="display:grid;grid-template-columns:1fr 90px 100px 28px;gap:0.4rem;margin-bottom:0.4rem">
           <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Package Name</span>
           <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Price ₹</span>
           <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Badge</span>
@@ -461,12 +459,11 @@ tr:hover td{background:rgba(255,255,255,0.02)}
       <!-- CLASS DETAILS -->
       <div class="slots-editor">
         <div class="slots-editor-title">Class Details</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 80px 32px;gap:0.5rem;margin-bottom:0.4rem">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;margin-bottom:0.4rem">
           <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Date</span>
           <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Time</span>
           <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Song / Track</span>
           <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Spots</span>
-          <span></span>
         </div>
         <div id="slotsEditor"></div>
         <button class="add-slot-btn" onclick="addSlotRow()">+ Add Class</button>
@@ -474,8 +471,11 @@ tr:hover td{background:rgba(255,255,255,0.02)}
     </div>
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeModal('wsModal')">Cancel</button>
-      <button class="btn btn-red" onclick="saveWorkshop()">
-        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Save Workshop
+      <button class="btn btn-outline" onclick="saveWorkshop('draft')">
+        <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save Draft
+      </button>
+      <button class="btn btn-red" onclick="saveWorkshop('active')">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Save & Publish
       </button>
     </div>
   </div>
@@ -847,57 +847,63 @@ function wsCardHTML(w){
   const slots    = w.slots||[];
   const packages = w.packages||[];
   const totalSp  = slots.reduce((s,sl)=>s+(parseInt(sl.totalSpots)||0),0);
-  // Count actual registrations for this workshop
   const wsRegs   = registrations.filter(r=>r.workshop===w.artist);
-  const usedSp   = wsRegs.reduce((s,r)=>{
-    const count = (r.slots||'').split('|').length;
-    return s + count;
-  }, 0);
+  const usedSp   = wsRegs.reduce((s,r)=>{ const count=(r.slots||'').split('|').length; return s+count; },0);
   const pct      = totalSp>0 ? Math.round(usedSp/totalSp*100) : 0;
   const minPrice = packages.length ? Math.min(...packages.map(p=>parseInt(p.price)||0)) : 0;
-  const statusPill = {active:'pill-green',full:'pill-red',cancelled:'pill-orange',completed:'pill-grey'}[w.status]||'pill-grey';
+  const statusColors = {active:'pill-green',full:'pill-red',cancelled:'pill-orange',completed:'pill-grey',draft:'pill-blue'};
+  const statusPill = statusColors[w.status]||'pill-grey';
   const bgStyle  = w.poster && w.poster.startsWith('data:')
     ? `background-image:url('${w.poster}');background-size:cover;background-position:center`
     : `background:${w.posterBg||'linear-gradient(135deg,#1a0407,#bc1f2e)'}`;
+  const dateStr  = w.dateFrom ? w.dateFrom + (w.dateTo&&w.dateTo!==w.dateFrom?' → '+w.dateTo:'') : '—';
 
-  return `<div class="ws-card">
-    <div class="ws-card-poster">
-      <div class="ws-card-poster-bg" style="${bgStyle}"></div>
-      <div class="ws-card-poster-overlay"></div>
-      <div class="ws-card-poster-content">
+  return `<div class="ws-card" style="position:relative">
+    <!-- Click anywhere except buttons to open detail -->
+    <div onclick="openWsDetail('${w.id}')" style="position:absolute;inset:0;z-index:0;cursor:pointer"></div>
+    <!-- Poster — 4:5 ratio -->
+    <div class="ws-card-poster" style="padding-top:125%;position:relative;overflow:hidden">
+      <div style="position:absolute;inset:0;${bgStyle}"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent)"></div>
+      <div style="position:absolute;bottom:0.85rem;left:0.85rem;z-index:1">
         <p class="ws-card-artist">${w.artist||'—'}</p>
         <p class="ws-card-style">${w.style||'—'}</p>
       </div>
     </div>
-    <div class="ws-card-body">
-      <div class="ws-card-meta">
-        <div class="ws-meta-item"><strong>Status</strong><span class="pill ${statusPill}">${w.status}</span></div>
-        <div class="ws-meta-item"><strong>From</strong><span style="color:var(--yellow)">₹${minPrice.toLocaleString('en-IN')}</span></div>
-        <div class="ws-meta-item"><strong>Slots</strong><span>${slots.length}</span></div>
-        ${w.dateFrom?`<div class="ws-meta-item"><strong>Date</strong><span style="color:var(--text-mid);font-size:0.75rem">${w.dateFrom}${w.dateTo&&w.dateTo!==w.dateFrom?' → '+w.dateTo:''}</span></div>`:''}
-        ${slots[0]?.song?`<div class="ws-meta-item"><strong>Song</strong><span style="color:var(--muted);font-size:0.72rem">♪ ${slots[0].song}</span></div>`:''}
+    <div class="ws-card-body" style="position:relative;z-index:1">
+      <!-- FIRST LINE: Status · Date · Slots -->
+      <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem;font-size:0.75rem">
+        <span class="pill ${statusPill}" style="font-size:0.6rem">${w.status}</span>
+        <span style="color:var(--muted)">·</span>
+        <span style="color:var(--text-mid)">${dateStr}</span>
+        <span style="color:var(--muted)">·</span>
+        <span style="color:var(--text-mid)">${slots.length} slot${slots.length!==1?'s':''}</span>
+        ${w.status==='draft'?'<span style="color:var(--muted)">·</span><span style="color:var(--yellow);font-size:0.68rem;font-weight:600">DRAFT</span>':''}
       </div>
-      <div class="ws-spots-bar">
+      <div class="ws-spots-bar" style="margin-bottom:0.85rem">
         <div class="spots-label"><span>Spots filled</span><span>${usedSp}/${totalSp}</span></div>
         <div class="spots-track"><div class="spots-fill ${pct>=100?'full':pct>=75?'warn':''}" style="width:${pct}%"></div></div>
       </div>
-      <div class="ws-card-actions">
-        <button class="btn btn-outline btn-sm" onclick="openEditWorkshop('${w.id}')">
+      <div class="ws-card-actions" style="position:relative;z-index:2">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openEditWorkshop('${w.id}')">
           <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit
         </button>
-        <button class="btn btn-outline btn-sm" onclick="openSpotsModal('${w.id}')">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openSpotsModal('${w.id}')">
           <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg>Spots
         </button>
-        <button class="btn btn-outline btn-sm" onclick="openManualStudent('${w.id}')">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openManualStudent('${w.id}')">
           <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>Add Student
         </button>
-        ${slots.map((s,si)=>`<button class="btn btn-ghost btn-sm" onclick="printSlot('${w.id}','${s.id}')">
+        ${slots.map((s,si)=>`<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();printSlot('${w.id}','${s.id}')">
           <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print Slot ${si+1}
         </button>`).join('')}
-        <button class="btn btn-outline btn-sm" onclick="cycleStatus('${w.id}')">
-          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Status
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openStatusMenu('${w.id}',this)">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>Status
         </button>
-        <button class="btn btn-danger btn-sm" onclick="openConfirmDelete('${w.id}')">
+        ${w.status==='draft'?`<button class="btn btn-green btn-sm" onclick="event.stopPropagation();publishDraft('${w.id}')">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Publish
+        </button>`:''}
+        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();openConfirmDelete('${w.id}')">
           <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete
         </button>
       </div>
@@ -922,12 +928,132 @@ window.filterWorkshops = function(f,el){
   renderWorkshopGrid();
 };
 
-window.cycleStatus = async function(id){
-  const w     = workshops.find(x=>x.id===id);
-  const order = ['active','full','cancelled','completed'];
-  w.status    = order[(order.indexOf(w.status)+1)%order.length];
+/* STATUS DROPDOWN MENU */
+let statusMenuOpen = null;
+window.openStatusMenu = function(id, btn){
+  // Close existing
+  document.querySelectorAll('.status-dropdown').forEach(d=>d.remove());
+  if(statusMenuOpen===id){ statusMenuOpen=null; return; }
+  statusMenuOpen = id;
+  const w = workshops.find(x=>x.id===id);
+  const statuses = ['active','full','cancelled','completed','draft'];
+  const menu = document.createElement('div');
+  menu.className = 'status-dropdown';
+  menu.style.cssText = 'position:absolute;background:var(--bg2);border:1px solid var(--border2);z-index:999;min-width:140px;box-shadow:0 8px 24px rgba(0,0,0,0.4)';
+  menu.innerHTML = statuses.map(s=>`
+    <div onclick="setStatus('${id}','${s}');this.closest('.status-dropdown').remove()" style="padding:0.65rem 1rem;font-size:0.78rem;cursor:pointer;display:flex;align-items:center;gap:0.5rem;border-bottom:1px solid var(--border);transition:background 0.15s;${s===w.status?'background:var(--red-dim);color:var(--red)':'color:var(--text-mid)'}" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='${s===w.status?'var(--red-dim)':'transparent'}'">
+      ${s===w.status?'<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>':'<span style="width:12px"></span>'}
+      ${s.charAt(0).toUpperCase()+s.slice(1)}
+    </div>`).join('');
+  // Position near button
+  const rect = btn.getBoundingClientRect();
+  menu.style.top  = (rect.bottom + window.scrollY + 4) + 'px';
+  menu.style.left = (rect.left  + window.scrollX)     + 'px';
+  document.body.appendChild(menu);
+  setTimeout(()=>document.addEventListener('click', function close(e){
+    if(!menu.contains(e.target)){ menu.remove(); document.removeEventListener('click',close); statusMenuOpen=null; }
+  }), 10);
+};
+
+window.setStatus = async function(id, status){
+  const w = workshops.find(x=>x.id===id);
+  w.status = status;
   await setDoc(doc(db,'workshops',id), w);
-  showToast('Status → ' + w.status);
+  showToast('Status set to ' + status);
+};
+
+/* WORKSHOP DETAIL PANEL */
+window.openWsDetail = function(id){
+  const w    = workshops.find(x=>x.id===id);
+  const regs = registrations.filter(r=>r.workshop===w.artist);
+  const existing = document.getElementById('wsDetailPanel');
+  if(existing) existing.remove();
+
+  const panel = document.createElement('div');
+  panel.id = 'wsDetailPanel';
+  panel.style.cssText = 'position:fixed;top:0;right:0;width:480px;max-width:100vw;height:100vh;background:var(--bg2);border-left:1px solid var(--border2);z-index:400;overflow-y:auto;transform:translateX(100%);transition:transform 0.3s ease;display:flex;flex-direction:column';
+
+  const slots = w.slots||[];
+  const bgStyle = w.poster && w.poster.startsWith('data:')
+    ? `background-image:url('${w.poster}');background-size:cover;background-position:center;padding-top:125%`
+    : `background:${w.posterBg||'linear-gradient(135deg,#1a0407,#bc1f2e)'};padding-top:125%`;
+
+  panel.innerHTML = `
+    <div style="position:relative;overflow:hidden">
+      <div style="${bgStyle};position:relative"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,var(--bg2) 0%,transparent 60%)"></div>
+      <button onclick="document.getElementById('wsDetailPanel').remove()" style="position:absolute;top:1rem;right:1rem;background:rgba(0,0,0,0.5);border:1px solid var(--border);color:var(--text);width:36px;height:36px;font-size:1.1rem;cursor:pointer;z-index:1">✕</button>
+      <div style="position:absolute;bottom:1.25rem;left:1.5rem">
+        <p style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.04em;color:#fff;line-height:1">${w.artist}</p>
+        <p style="font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.5)">${w.style||''}</p>
+      </div>
+    </div>
+    <div style="padding:1.5rem;flex:1">
+      <!-- Meta -->
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.25rem">
+        <span class="pill ${({active:'pill-green',full:'pill-red',cancelled:'pill-orange',completed:'pill-grey',draft:'pill-blue'}[w.status]||'pill-grey')}">${w.status}</span>
+        ${w.dateFrom?`<span class="pill pill-grey">${w.dateFrom}${w.dateTo&&w.dateTo!==w.dateFrom?' → '+w.dateTo:''}</span>`:''}
+        <span class="pill pill-grey">${slots.length} slot${slots.length!==1?'s':''}</span>
+      </div>
+      <!-- Desc -->
+      ${w.desc?`<p style="font-size:0.85rem;color:var(--text-muted);line-height:1.7;margin-bottom:1.25rem">${w.desc}</p>`:''}
+      <!-- Slots -->
+      <p style="font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;font-family:'Syne',sans-serif;font-weight:600">Class Details</p>
+      ${slots.map(s=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:0.65rem 0.85rem;background:var(--bg3);border:1px solid var(--border);margin-bottom:0.4rem;font-size:0.82rem">
+        <div>
+          <span style="color:var(--text)">${s.date}</span>
+          <span style="color:var(--muted);margin-left:0.5rem">${s.time}</span>
+          ${s.song?`<span style="color:var(--yellow);margin-left:0.5rem;font-size:0.72rem">♪ ${s.song}</span>`:''}
+        </div>
+        <span style="font-size:0.7rem;color:var(--muted)">${s.spots||0} left</span>
+      </div>`).join('')}
+      <!-- Packages -->
+      <p style="font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;margin-top:1.25rem;font-family:'Syne',sans-serif;font-weight:600">Packages</p>
+      ${(w.packages||[]).map(p=>`<div style="display:flex;justify-content:space-between;padding:0.55rem 0.85rem;background:var(--bg3);border:1px solid var(--border);margin-bottom:0.4rem;font-size:0.82rem">
+        <span style="color:var(--text)">${p.name}</span>
+        <span style="color:var(--yellow);font-family:'Bebas Neue',sans-serif;font-size:1.1rem">₹${parseInt(p.price||0).toLocaleString('en-IN')}</span>
+      </div>`).join('')}
+      <!-- Registrations -->
+      <p style="font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;margin-top:1.25rem;font-family:'Syne',sans-serif;font-weight:600">Registrations (${regs.length})</p>
+      ${regs.length ? regs.map(r=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.85rem;background:var(--bg3);border:1px solid var(--border);margin-bottom:0.35rem;font-size:0.82rem">
+        <div>
+          <span style="color:var(--text);font-weight:500">${r.name||'—'}</span>
+          <span style="color:var(--muted);margin-left:0.5rem;font-size:0.72rem">${r.phone||''}</span>
+        </div>
+        <div style="text-align:right">
+          <span style="color:var(--yellow);font-size:0.78rem">₹${parseFloat(r.amount_paid||0).toLocaleString('en-IN')}</span>
+          <span style="display:block;font-size:0.65rem;color:var(--muted)">${r.package||''}</span>
+        </div>
+      </div>`).join('') : '<p style="font-size:0.82rem;color:var(--muted);padding:0.75rem 0">No registrations yet</p>'}
+      <!-- Actions -->
+      <div style="display:flex;gap:0.75rem;margin-top:1.5rem;flex-wrap:wrap">
+        <button class="btn btn-outline" onclick="document.getElementById('wsDetailPanel').remove();openEditWorkshop('${w.id}')">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit Workshop
+        </button>
+        <button class="btn btn-outline" onclick="document.getElementById('wsDetailPanel').remove();openManualStudent('${w.id}')">
+          <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>Add Student
+        </button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(panel);
+  requestAnimationFrame(()=>panel.style.transform='translateX(0)');
+  // Click outside to close
+  setTimeout(()=>document.addEventListener('click', function close(e){
+    if(!panel.contains(e.target)&&!e.target.closest('.ws-card')){
+      panel.style.transform='translateX(100%)';
+      setTimeout(()=>panel.remove(),300);
+      document.removeEventListener('click',close);
+    }
+  }), 100);
+};
+
+/* DRAFT — publish draft */
+window.publishDraft = async function(id){
+  const w = workshops.find(x=>x.id===id);
+  w.status = 'active';
+  await setDoc(doc(db,'workshops',id), w);
+  showToast('Workshop published — now live on website!');
 };
 
 /* ══════════════════════════════════════
@@ -1005,32 +1131,37 @@ window.openEditWorkshop = function(id){
 
 window.addPackageRow = function(p={}){
   const div = document.createElement('div');
-  div.style.cssText = 'display:grid;grid-template-columns:2fr 1fr 1fr 28px;gap:0.5rem;margin-bottom:0.5rem;align-items:center';
+  div.style.cssText = 'display:grid;grid-template-columns:1fr 90px 100px 28px;gap:0.4rem;margin-bottom:0.5rem;align-items:center';
   div.innerHTML = `
-    <input type="text"   placeholder="e.g. Single Session" value="${p.name||''}" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none" class="pkg-name">
-    <input type="number" placeholder="900" value="${p.price||''}" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none" class="pkg-price">
-    <input type="text"   placeholder="Best Value" value="${p.badge||''}" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none" class="pkg-badge">
+    <input type="text"   placeholder="Package name e.g. Single Session" value="${p.name||''}" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;min-width:0" class="pkg-name">
+    <input type="number" placeholder="₹ Price" value="${p.price||''}" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;min-width:0" class="pkg-price">
+    <input type="text"   placeholder="Badge" value="${p.badge||''}" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;min-width:0" class="pkg-badge">
     <button onclick="this.parentElement.remove()" class="slot-delete"><svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
   document.getElementById('packagesEditor').appendChild(div);
 };
 
 window.addSlotRow = function(s={}){
   const div = document.createElement('div');
-  div.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr 80px 32px;gap:0.5rem;margin-bottom:0.5rem;align-items:center';
+  div.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;margin-bottom:0.5rem';
   div.innerHTML = `
-    <input type="text"   placeholder="Saturday, 7 Jun 2025" value="${s.date||''}" class="slot-date-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
-    <input type="text"   placeholder="11:00 AM – 1:00 PM"   value="${s.time||''}" class="slot-time-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
-    <input type="text"   placeholder="e.g. Calm Down – Rema" value="${s.song||''}" class="slot-song-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
-    <input type="number" placeholder="20" value="${s.totalSpots||''}" min="1" class="slot-spots-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
-    <button onclick="this.parentElement.remove()" class="slot-delete"><svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+    <input type="text"   placeholder="Date e.g. Saturday, 7 Jun 2025" value="${s.date||''}" class="slot-date-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;min-width:0">
+    <input type="text"   placeholder="Time e.g. 11:00 AM – 1:00 PM" value="${s.time||''}" class="slot-time-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;min-width:0">
+    <input type="text"   placeholder="Song / Track" value="${s.song||''}" class="slot-song-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;min-width:0">
+    <div style="display:grid;grid-template-columns:1fr 32px;gap:0.4rem">
+      <input type="number" placeholder="Spots e.g. 20" value="${s.totalSpots||''}" min="1" class="slot-spots-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;min-width:0">
+      <button onclick="this.closest('div').parentElement.remove()" class="slot-delete"><svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>`;
   document.getElementById('slotsEditor').appendChild(div);
 };
 
-window.saveWorkshop = async function(){
+window.saveWorkshop = async function(saveStatus){
   const artist = document.getElementById('wsArtist').value.trim();
   if(!artist){ showToast('Artist name is required','error'); return; }
 
-  const btn = document.querySelector('#wsModal .btn-red');
+  const btn = saveStatus==='draft'
+    ? document.querySelector('#wsModal .btn-outline')
+    : document.querySelector('#wsModal .btn-red');
+  const origText = btn.innerHTML;
   btn.innerHTML = '<span class="spinner"></span> Saving…';
   btn.disabled  = true;
 
@@ -1069,7 +1200,7 @@ window.saveWorkshop = async function(){
     artist, id,
     initials: document.getElementById('wsInitials').value.trim() || artist.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2),
     style:    document.getElementById('wsStyle').value.trim(),
-    status:   document.getElementById('wsStatus').value,
+    status:   saveStatus || document.getElementById('wsStatus').value,
     poster:   posterToSave,
     posterBg: existing?.posterBg || 'linear-gradient(145deg,#1a0407,#bc1f2e)',
     desc:     document.getElementById('wsDesc').value.trim(),
@@ -1085,15 +1216,14 @@ window.saveWorkshop = async function(){
   try {
     await setDoc(doc(db,'workshops',id), wsData);
     closeModal('wsModal');
-    showToast(editId ? 'Workshop updated!' : 'Workshop added & live on website!');
+    showToast(saveStatus==='draft' ? '✓ Saved as draft — not live yet' : editId ? 'Workshop updated!' : '✓ Workshop published — now live!');
   } catch(e) {
-    // If still too large, save without poster
     wsData.poster = '';
     await setDoc(doc(db,'workshops',id), wsData);
     closeModal('wsModal');
     showToast('Workshop saved! Poster was too large — add a smaller image.');
   }
-  btn.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Save Workshop';
+  btn.innerHTML = origText;
   btn.disabled  = false;
 };
 
@@ -1236,21 +1366,27 @@ function renderRegTable(){
     (r.phone||'').includes(regSearchQ)
   );
   tbody.innerHTML = data.length
-    ? data.map(r=>`<tr>
-        <td style="color:var(--text)">${r.name||'—'}</td>
-        <td>${r.phone||'—'}</td>
-        <td>${r.workshop||'—'}</td>
-        <td>${r.package||'—'}</td>
-        <td style="font-size:0.75rem">${r.slots||'—'}</td>
-        <td style="font-size:0.75rem;color:var(--yellow)">${getSongForReg(r)}</td>
-        <td style="color:var(--yellow)">₹${parseFloat(r.amount_paid||0).toLocaleString('en-IN')}</td>
-        <td>${payTypePill(r.payment_type)}</td>
-        <td style="font-size:0.72rem;color:var(--muted)">${r.payment_id||'—'}</td>
-        <td style="font-size:0.72rem;color:var(--muted)">${r.timestamp||'—'}</td>
-        <td><button class="btn btn-danger btn-sm" onclick="deleteRegistration('${r.id}','${(r.name||'').replace(/'/g,"\\'")}')">
-          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete
-        </button></td>
-      </tr>`).join('')
+    ? data.map(r=>{
+        const ws = workshops.find(x=>x.artist===r.workshop);
+        const deleted = !ws;
+        const rowStyle = deleted ? 'background:rgba(188,31,46,0.08);border-left:3px solid var(--red)' : '';
+        const badge = deleted ? '<span class="pill pill-red" style="font-size:0.58rem;margin-left:0.4rem">Deleted Workshop</span>' : '';
+        return `<tr style="${rowStyle}">
+          <td style="color:var(--text)">${r.name||'—'}${badge}</td>
+          <td>${r.phone||'—'}</td>
+          <td style="${deleted?'color:var(--red)':''}">${r.workshop||'—'}</td>
+          <td>${r.package||'—'}</td>
+          <td style="font-size:0.75rem">${r.slots||'—'}</td>
+          <td style="font-size:0.75rem;color:var(--yellow)">${getSongForReg(r)}</td>
+          <td style="color:var(--yellow)">₹${parseFloat(r.amount_paid||0).toLocaleString('en-IN')}</td>
+          <td>${payTypePill(r.payment_type)}</td>
+          <td style="font-size:0.72rem;color:var(--muted)">${r.payment_id||'—'}</td>
+          <td style="font-size:0.72rem;color:var(--muted)">${r.timestamp||'—'}</td>
+          <td><button class="btn btn-danger btn-sm" onclick="deleteRegistration('${r.id}','${(r.name||'').replace(/'/g,"\\'")}')">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete
+          </button></td>
+        </tr>`;
+      }).join('')
     : '<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:3rem">No registrations found</td></tr>';
 }
 

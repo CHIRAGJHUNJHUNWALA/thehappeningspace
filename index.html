@@ -129,8 +129,9 @@ section{padding:5rem 2rem}
 .workshop-card{background:var(--card-bg);border:1px solid var(--border);border-radius:2px;overflow:hidden;transition:border-color 0.3s,transform 0.3s;position:relative;cursor:none}
 .workshop-card:hover{border-color:var(--border-red);transform:translateY(-6px)}
 .workshop-card:hover .card-poster{transform:scale(1.04)}
-.card-poster-wrap{height:260px;overflow:hidden;position:relative}
-.card-poster{width:100%;height:100%;transition:transform 0.5s ease;display:flex;align-items:center;justify-content:center;position:relative}
+.card-poster-wrap{position:relative;overflow:hidden}
+.card-poster-wrap::before{content:'';display:block;padding-top:125%}
+.card-poster{position:absolute;inset:0;width:100%;height:100%;transition:transform 0.5s ease;display:flex;align-items:flex-end;justify-content:flex-start}
 .card-poster-label{position:absolute;bottom:0;left:0;right:0;padding:1.5rem 1.25rem 1rem;background:linear-gradient(to top,rgba(0,0,0,0.85),transparent)}
 .card-artist{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0.06em;color:#fff;line-height:1}
 .card-style{font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-top:0.2rem}
