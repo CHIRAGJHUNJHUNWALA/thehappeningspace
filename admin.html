@@ -416,6 +416,16 @@ tr:hover td{background:rgba(255,255,255,0.02)}
           </select>
         </div>
       </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Workshop Start Date *</label>
+          <input type="date" id="wsDateFrom" style="color-scheme:dark">
+        </div>
+        <div class="form-group">
+          <label>Workshop End Date <span style="font-weight:300;color:var(--muted)">(if multi-day)</span></label>
+          <input type="date" id="wsDateTo" style="color-scheme:dark">
+        </div>
+      </div>
       <div class="form-row full">
         <div class="form-group"><label>Workshop Description</label><textarea id="wsDesc" placeholder="What students will learn…"></textarea></div>
       </div>
@@ -753,15 +763,26 @@ window.applyCustom = applyCustom;
 function getFilteredRegs(){
   if(!filterFrom && !filterTo) return registrations;
   return registrations.filter(r => {
-    // Use timestamp field to filter
-    const ts = r.timestamp || r.Timestamp || '';
-    if(!ts) return false;
+    const w = workshops.find(x => x.artist === r.workshop);
+    if(w && w.dateFrom){
+      const wsFrom = new Date(w.dateFrom);
+      const wsTo   = w.dateTo ? new Date(w.dateTo) : wsFrom;
+      // Workshop overlaps with filter period if:
+      // workshop starts before filter ends AND workshop ends after filter starts
+      const overlaps =
+        (!filterTo   || wsFrom <= filterTo) &&
+        (!filterFrom || wsTo   >= filterFrom);
+      return overlaps;
+    }
+    // Fallback — filter by registration timestamp
+    const ts = r.timestamp || '';
+    if(!ts) return true;
     try {
       const d = new Date(ts);
       if(filterFrom && d < filterFrom) return false;
       if(filterTo   && d > filterTo)   return false;
       return true;
-    } catch(e){ return false; }
+    } catch(e){ return true; }
   });
 }
 
@@ -853,6 +874,7 @@ function wsCardHTML(w){
         <div class="ws-meta-item"><strong>Status</strong><span class="pill ${statusPill}">${w.status}</span></div>
         <div class="ws-meta-item"><strong>From</strong><span style="color:var(--yellow)">₹${minPrice.toLocaleString('en-IN')}</span></div>
         <div class="ws-meta-item"><strong>Slots</strong><span>${slots.length}</span></div>
+        ${w.dateFrom?`<div class="ws-meta-item"><strong>Date</strong><span style="color:var(--text-mid);font-size:0.75rem">${w.dateFrom}${w.dateTo&&w.dateTo!==w.dateFrom?' → '+w.dateTo:''}</span></div>`:''}
         ${slots[0]?.song?`<div class="ws-meta-item"><strong>Song</strong><span style="color:var(--muted);font-size:0.72rem">♪ ${slots[0].song}</span></div>`:''}
       </div>
       <div class="ws-spots-bar">
@@ -942,6 +964,8 @@ window.openAddWorkshop = function(){
   document.getElementById('wsStatus').value   = 'active';
   document.getElementById('wsDesc').value     = '';
   document.getElementById('wsBio').value      = '';
+  document.getElementById('wsDateFrom').value = '';
+  document.getElementById('wsDateTo').value   = '';
   document.getElementById('posterPreview').style.display = 'none';
   document.getElementById('posterUploadText').textContent = 'Click or drag & drop poster image here';
   document.getElementById('packagesEditor').innerHTML = '';
@@ -961,6 +985,8 @@ window.openEditWorkshop = function(id){
   document.getElementById('wsStatus').value   = w.status||'active';
   document.getElementById('wsDesc').value     = w.desc||'';
   document.getElementById('wsBio').value      = w.bio||'';
+  document.getElementById('wsDateFrom').value = w.dateFrom||'';
+  document.getElementById('wsDateTo').value   = w.dateTo||'';
   pendingPosterURL = w.poster||null;
   if(w.poster){
     document.getElementById('posterPreviewImg').src = w.poster;
@@ -1050,6 +1076,8 @@ window.saveWorkshop = async function(){
     bio:      document.getElementById('wsBio').value.trim(),
     tag:      'Workshop',
     bioTitle: document.getElementById('wsStyle').value.trim(),
+    dateFrom: document.getElementById('wsDateFrom').value || '',
+    dateTo:   document.getElementById('wsDateTo').value   || '',
     packages, slots,
     createdAt: existing?.createdAt || Date.now(),
   };
