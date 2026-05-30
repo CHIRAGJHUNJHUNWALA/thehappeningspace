@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us — The Happening Space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{cursor:none!important}
+:root{
+  --red:#bc1f2e;--red-dark:#8f1520;--red-dim:rgba(188,31,46,0.1);
+  --black:#0a0a0a;--off-black:#111;--card-bg:#161616;
+  --border:rgba(255,255,255,0.08);--border-red:rgba(188,31,46,0.4);
+  --text:#f5f5f0;--text-muted:rgba(245,245,240,0.45);--text-mid:rgba(245,245,240,0.7);
+  --yellow:#f5e642;--green:#6aaf7e;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--text);font-family:'Syne',sans-serif;overflow-x:hidden}
+.cursor{position:fixed;width:12px;height:12px;background:var(--red);border-radius:50%;pointer-events:none;z-index:99999;top:0;left:0;transform:translate(-50%,-50%);transition:opacity 0.2s}
+.cursor-ring{position:fixed;width:38px;height:38px;border:2px solid rgba(188,31,46,0.75);border-radius:50%;pointer-events:none;z-index:99998;top:0;left:0;transform:translate(-50%,-50%)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;pointer-events:all}
+
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:0.1em;color:var(--text);line-height:1}
+.logo-text span{color:var(--red)}
+.hamburger{display:flex;flex-direction:column;justify-content:center;gap:6px;width:44px;height:44px;pointer-events:all;background:rgba(10,10,10,0.7);backdrop-filter:blur(10px);border:1px solid var(--border);padding:12px;z-index:300;transition:border-color 0.3s}
+.hamburger:hover{border-color:var(--red)}
+.hamburger span{display:block;width:20px;height:1.5px;background:var(--text);transition:transform 0.35s ease,opacity 0.25s ease,width 0.3s ease;transform-origin:center}
+.hamburger.open span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;width:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+.nav-overlay{position:fixed;inset:0;z-index:250;background:rgba(10,10,10,0.97);display:flex;flex-direction:column;justify-content:center;padding:4rem 3rem;opacity:0;pointer-events:none;transition:opacity 0.4s ease;backdrop-filter:blur(20px)}
+.nav-overlay.open{opacity:1;pointer-events:all}
+.nav-overlay-label{font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--text-muted);margin-bottom:2.5rem;display:flex;align-items:center;gap:0.75rem}
+.nav-overlay-label::before{content:'';width:24px;height:1px;background:var(--text-muted)}
+.nav-overlay-links{list-style:none;display:flex;flex-direction:column;gap:0}
+.nav-overlay-links li{border-bottom:1px solid var(--border);overflow:hidden;transform:translateY(20px);opacity:0;transition:transform 0.4s ease,opacity 0.4s ease}
+.nav-overlay.open .nav-overlay-links li:nth-child(1){transform:translateY(0);opacity:1;transition-delay:0.08s}
+.nav-overlay.open .nav-overlay-links li:nth-child(2){transform:translateY(0);opacity:1;transition-delay:0.13s}
+.nav-overlay.open .nav-overlay-links li:nth-child(3){transform:translateY(0);opacity:1;transition-delay:0.18s}
+.nav-overlay.open .nav-overlay-links li:nth-child(4){transform:translateY(0);opacity:1;transition-delay:0.23s}
+.nav-overlay.open .nav-overlay-links li:nth-child(5){transform:translateY(0);opacity:1;transition-delay:0.28s}
+.nav-overlay.open .nav-overlay-links li:nth-child(6){transform:translateY(0);opacity:1;transition-delay:0.33s}
+.nav-overlay-links a{display:flex;align-items:center;justify-content:space-between;text-decoration:none;padding:1.1rem 0;font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,6vw,3.8rem);letter-spacing:0.04em;color:var(--text);transition:color 0.2s,padding-left 0.25s;line-height:1}
+.nav-overlay-links a:hover{color:var(--red);padding-left:0.75rem}
+.link-num{font-family:'Syne',sans-serif;font-size:0.7rem;letter-spacing:0.15em;color:var(--text-muted);font-weight:400;align-self:flex-start;margin-top:0.4rem}
+.nav-overlay-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:2.5rem;flex-wrap:wrap;gap:1rem}
+.nav-overlay-address{font-size:0.75rem;color:var(--text-muted);line-height:1.6;font-style:normal}
+.nav-overlay-social{display:flex;gap:0.75rem}
+.nav-social-btn{width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);text-decoration:none;font-size:0.7rem;font-weight:700;transition:border-color 0.2s,color 0.2s}
+.nav-social-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 2rem 5rem;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0a0a0a 0%,#1a0608 50%,#0a0a0a 100%)}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(188,31,46,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(188,31,46,0.05) 1px,transparent 1px);background-size:60px 60px}
+.hero-accent{position:absolute;top:15%;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(188,31,46,0.12) 0%,transparent 70%)}
+.hero-content{position:relative;z-index:1;max-width:1100px;margin:0 auto;width:100%}
+.hero-eyebrow{font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:1.25rem;display:flex;align-items:center;gap:0.75rem}
+.hero-eyebrow::before{content:'';width:28px;height:1px;background:var(--red)}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,14vw,12rem);line-height:0.88;letter-spacing:0.02em;color:var(--text);margin-bottom:2rem}
+.hero-title .outline{-webkit-text-stroke:1.5px rgba(245,245,240,0.2);color:transparent}
+.hero-title .red{color:var(--red)}
+.hero-bottom{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:end}
+.hero-desc{font-size:1.05rem;color:var(--text-muted);font-weight:300;line-height:1.8;max-width:480px}
+.hero-founded{text-align:right}
+.hero-founded-label{font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.25rem}
+.hero-founded-date{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:var(--red);letter-spacing:0.04em;line-height:1}
+.hero-founded-sub{font-size:0.75rem;color:var(--text-muted);margin-top:0.15rem;letter-spacing:0.05em}
+
+/* STATS */
+.stats-section{background:var(--off-black);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:3rem 2rem}
+.stats-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem}
+.stat-item{text-align:center;padding:1.5rem;border:1px solid var(--border);transition:border-color 0.3s}
+.stat-item:hover{border-color:var(--border-red)}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:var(--red);letter-spacing:0.04em;line-height:1;margin-bottom:0.25rem}
+.stat-label{font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted)}
+
+/* STORY SECTION */
+.story-section{max-width:1100px;margin:0 auto;padding:5rem 2rem;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.story-left{}
+.story-eyebrow{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--red);margin-bottom:0.75rem;display:flex;align-items:center;gap:0.6rem}
+.story-eyebrow::before{content:'';width:16px;height:1px;background:var(--red)}
+.story-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,4rem);letter-spacing:0.04em;color:var(--text);line-height:0.95;margin-bottom:1.5rem}
+.story-title span{color:var(--red)}
+.story-text{font-size:0.92rem;color:var(--text-muted);font-weight:300;line-height:1.9;margin-bottom:1.25rem}
+.story-right{}
+.story-quote{border-left:3px solid var(--red);padding:1.5rem 1.75rem;background:var(--card-bg);margin-bottom:1.5rem}
+.story-quote-text{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0.03em;color:var(--text);line-height:1.2;margin-bottom:0.75rem}
+.story-quote-sub{font-size:0.8rem;color:var(--text-muted);font-weight:300;line-height:1.7}
+.story-values{display:flex;flex-direction:column;gap:0.75rem}
+.story-value{display:flex;align-items:center;gap:0.85rem;padding:0.85rem 1rem;border:1px solid var(--border);transition:border-color 0.2s}
+.story-value:hover{border-color:var(--border-red)}
+.story-value-icon{width:32px;height:32px;border:1px solid var(--border-red);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.story-value-icon svg{width:14px;height:14px;stroke:var(--red);fill:none;stroke-width:2}
+.story-value-text{font-size:0.85rem;color:var(--text-mid)}
+.story-value-text strong{color:var(--text);display:block;font-size:0.88rem;margin-bottom:0.1rem}
+
+/* FOUNDERS */
+.founders-section{background:var(--off-black);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:5rem 2rem}
+.founders-inner{max-width:1100px;margin:0 auto}
+.founders-eyebrow{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--red);margin-bottom:0.75rem;display:flex;align-items:center;gap:0.6rem}
+.founders-eyebrow::before{content:'';width:16px;height:1px;background:var(--red)}
+.founders-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,4rem);letter-spacing:0.04em;color:var(--text);margin-bottom:3rem}
+.founders-title span{color:var(--red)}
+.founders-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.founder-card{background:var(--card-bg);border:1px solid var(--border);overflow:hidden;transition:border-color 0.3s}
+.founder-card:hover{border-color:var(--border-red)}
+.founder-avatar{height:200px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.founder-avatar-bg{position:absolute;inset:0}
+.founder-avatar-initials{font-family:'Bebas Neue',sans-serif;font-size:6rem;color:rgba(255,255,255,0.1);letter-spacing:0.05em;position:relative;z-index:1;user-select:none}
+.founder-info{padding:1.75rem}
+.founder-name{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.04em;color:var(--text);margin-bottom:0.2rem}
+.founder-role{font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--red);margin-bottom:1rem}
+.founder-bio{font-size:0.85rem;color:var(--text-muted);font-weight:300;line-height:1.8}
+.founder-tag{display:inline-block;background:var(--red-dim);border:1px solid var(--border-red);color:var(--red);font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;margin-top:1rem;font-family:'Syne',sans-serif}
+
+/* WHAT WE BELIEVE */
+.believe-section{max-width:1100px;margin:0 auto;padding:5rem 2rem}
+.believe-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,6vw,5rem);letter-spacing:0.04em;color:var(--text);text-align:center;margin-bottom:3rem;line-height:0.95}
+.believe-title span{color:var(--red)}
+.believe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.believe-item{padding:2rem;border:1px solid var(--border);text-align:center;transition:border-color 0.3s,background 0.3s}
+.believe-item:hover{border-color:var(--border-red);background:var(--red-dim)}
+.believe-num{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--red);opacity:0.3;line-height:1;margin-bottom:0.75rem;letter-spacing:0.04em}
+.believe-item h3{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.04em;color:var(--text);margin-bottom:0.6rem}
+.believe-item p{font-size:0.82rem;color:var(--text-muted);font-weight:300;line-height:1.7}
+
+/* JOIN CTA */
+.join-section{padding:5rem 2rem;text-align:center;position:relative;overflow:hidden;border-top:1px solid var(--border)}
+.join-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0a0a0a,#1a0608,#0a0a0a)}
+.join-content{position:relative;z-index:1}
+.join-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,8vw,7rem);letter-spacing:0.03em;color:var(--text);line-height:0.9;margin-bottom:1rem}
+.join-title span{color:var(--red)}
+.join-sub{font-size:0.95rem;color:var(--text-muted);font-weight:300;max-width:480px;margin:0 auto 2.5rem;line-height:1.7}
+.join-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:var(--red);color:#fff;border:none;padding:0.95rem 2.25rem;font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;transition:background 0.2s}
+.btn-primary:hover{background:var(--red-dark)}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border);padding:0.95rem 2rem;font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;transition:all 0.2s}
+.btn-outline:hover{border-color:var(--red);color:var(--red)}
+.btn-primary svg,.btn-outline svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:900px){
+  .hero-bottom{grid-template-columns:1fr;gap:1.5rem}
+  .hero-founded{text-align:left}
+  .stats-inner{grid-template-columns:1fr 1fr;gap:1rem}
+  .story-section{grid-template-columns:1fr;gap:2.5rem;padding:3rem 1.25rem}
+  .founders-grid{grid-template-columns:1fr;gap:1.5rem}
+  .believe-grid{grid-template-columns:1fr;gap:1rem}
+  .founders-section{padding:3rem 1.25rem}
+  .believe-section{padding:3rem 1.25rem}
+  .join-section{padding:3rem 1.25rem}
+  .stats-section{padding:2rem 1.25rem}
+  *{cursor:auto!important}
+  nav{padding:1rem 1.25rem}
+  .hero{padding:0 1.25rem 4rem}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="logo.png" alt="THS" style="width:40px;height:40px;object-fit:cover;border-radius:4px;flex-shrink:0">
+    <div class="logo-text">The <span>Happening</span><br>Space</div>
+  </a>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="nav-overlay" id="navOverlay">
+  <div>
+    <button onclick="toggleMenu()" style="position:absolute;top:1.5rem;right:1.5rem;background:none;border:1px solid rgba(255,255,255,0.15);color:var(--text);width:44px;height:44px;font-size:1.3rem;line-height:1;transition:border-color 0.2s,color 0.2s;pointer-events:all" onmouseover="this.style.borderColor='#bc1f2e';this.style.color='#bc1f2e'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--text)'">✕</button><p class="nav-overlay-label">Menu</p>
+    <ul class="nav-overlay-links">
+      <li><a href="index.html"><span>Home</span><span class="link-num">01</span></a></li>
+      <li><a href="workshops.html"><span>Workshops</span><span class="link-num">02</span></a></li>
+      <li><a href="batches.html"><span>Regular Batches</span><span class="link-num">03</span></a></li>
+      <li><a href="studio-booking.html"><span>Studio Booking</span><span class="link-num">04</span></a></li>
+      <li><a href="about.html"><span>About Us</span><span class="link-num">05</span></a></li>
+      <li><a href="contact.html"><span>Contact Us</span><span class="link-num">06</span></a></li>
+    </ul>
+    <div class="nav-overlay-bottom">
+      <address class="nav-overlay-address">311 – International Wealth Center<br>VIP Road, Surat, Gujarat</address>
+      <div class="nav-overlay-social">
+        <a href="#" class="nav-social-btn">IG</a>
+        <a href="#" class="nav-social-btn">YT</a>
+        <a href="#" class="nav-social-btn">WA</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-accent"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Our Story</p>
+    <h1 class="hero-title">
+      <span class="outline">MORE</span><br>
+      <span class="red">THAN</span><br>
+      <span class="outline">A STUDIO</span>
+    </h1>
+    <div class="hero-bottom">
+      <p class="hero-desc">The Happening Space was built with one belief — that movement brings people together. Not just as dancers, but as humans. A place where you grow, belong, and just be yourself.</p>
+      <div class="hero-founded">
+        <p class="hero-founded-label">Founded</p>
+        <p class="hero-founded-date">08.09.24</p>
+        <p class="hero-founded-sub">Surat, Gujarat</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-section">
+  <div class="stats-inner">
+    <div class="stat-item fade-up">
+      <p class="stat-num">1000+</p>
+      <p class="stat-label">Workshops Completed</p>
+    </div>
+    <div class="stat-item fade-up">
+      <p class="stat-num">5</p>
+      <p class="stat-label">Regular Batches</p>
+    </div>
+    <div class="stat-item fade-up">
+      <p class="stat-num">150+</p>
+      <p class="stat-label">Students Weekly</p>
+    </div>
+    <div class="stat-item fade-up">
+      <p class="stat-num">1</p>
+      <p class="stat-label">Community</p>
+    </div>
+  </div>
+</div>
+
+<!-- STORY -->
+<section class="story-section">
+  <div class="story-left fade-up">
+    <p class="story-eyebrow">How It Started</p>
+    <h2 class="story-title">BUILT FOR THE <span>COMMUNITY</span></h2>
+    <p class="story-text">On September 8, 2024, two friends from the same school, same batch, same city — decided to build something Surat had never seen before. Not just a dance studio. A space where passion has a home.</p>
+    <p class="story-text">The idea was simple but powerful — build a community stronger than ever. A place where everyone who walks in grows with us, builds with us, and leaves feeling like they belong somewhere.</p>
+    <p class="story-text">We come from business and marketing — not dance. But that's exactly what makes The Happening Space different. We built this the way a community should be built. With intention, with heart, and with everyone in mind.</p>
+  </div>
+  <div class="story-right fade-up">
+    <div class="story-quote">
+      <p class="story-quote-text">"Learn, fail, make friends, spend the best time of your day at your second home."</p>
+      <p class="story-quote-sub">This isn't a tagline. It's the reason we built this place. Every class, every workshop, every jam — it's all in service of this one idea.</p>
+    </div>
+    <div class="story-values">
+      <div class="story-value">
+        <div class="story-value-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="story-value-text"><strong>Community First</strong>You're not a student here. You're a part of something.</div>
+      </div>
+      <div class="story-value">
+        <div class="story-value-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="story-value-text"><strong>Growth Over Perfection</strong>Fail here. Learn here. Come back tomorrow.</div>
+      </div>
+      <div class="story-value">
+        <div class="story-value-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <div class="story-value-text"><strong>Be Yourself</strong>Stress free. No judgement. Just movement.</div>
+      </div>
+      <div class="story-value">
+        <div class="story-value-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="story-value-text"><strong>Your Second Home</strong>The best part of your day happens here.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDERS -->
+<section class="founders-section">
+  <div class="founders-inner">
+    <p class="founders-eyebrow">The People Behind It</p>
+    <h2 class="founders-title">MEET THE <span>FOUNDERS</span></h2>
+    <div class="founders-grid">
+      <div class="founder-card fade-up">
+        <div class="founder-avatar">
+          <div class="founder-avatar-bg" style="background:linear-gradient(145deg,#1a0407,#bc1f2e)"></div>
+          <span class="founder-avatar-initials">CJ</span>
+        </div>
+        <div class="founder-info">
+          <h3 class="founder-name">Chirag Jhunjhunwala</h3>
+          <p class="founder-role">Co-Founder</p>
+          <p class="founder-bio">Born and brought up in Surat. Business and marketing background. Chirag has always believed that the best things in life are built around people — and The Happening Space is proof of that belief.</p>
+          <span class="founder-tag">Business · Marketing · Community</span>
+        </div>
+      </div>
+      <div class="founder-card fade-up">
+        <div class="founder-avatar">
+          <div class="founder-avatar-bg" style="background:linear-gradient(145deg,#05080f,#1a3a6b)"></div>
+          <span class="founder-avatar-initials">GB</span>
+        </div>
+        <div class="founder-info">
+          <h3 class="founder-name">Govind Bhutra</h3>
+          <p class="founder-role">Co-Founder</p>
+          <p class="founder-bio">Same school, same batch, same city — Govind and Chirag have been building together since the beginning. His passion for creating experiences that matter is the heartbeat of this space.</p>
+          <span class="founder-tag">Business · Marketing · Community</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT WE BELIEVE -->
+<section class="believe-section">
+  <h2 class="believe-title">WHAT WE <span>BELIEVE</span></h2>
+  <div class="believe-grid">
+    <div class="believe-item fade-up">
+      <p class="believe-num">01</p>
+      <h3>Everyone Belongs</h3>
+      <p>Whether you've been dancing for 10 years or 10 days — this space was made for you. No gatekeeping. Just growth.</p>
+    </div>
+    <div class="believe-item fade-up">
+      <p class="believe-num">02</p>
+      <h3>Passion Has a Home</h3>
+      <p>We built this for every person who needed a space to pursue what they love without compromise.</p>
+    </div>
+    <div class="believe-item fade-up">
+      <p class="believe-num">03</p>
+      <h3>Community is Everything</h3>
+      <p>The people you meet here become your people. The connections made on this floor last a lifetime.</p>
+    </div>
+    <div class="believe-item fade-up">
+      <p class="believe-num">04</p>
+      <h3>Growth Never Stops</h3>
+      <p>We grow with every student, every artist, every workshop. The Happening Space is always evolving.</p>
+    </div>
+    <div class="believe-item fade-up">
+      <p class="believe-num">05</p>
+      <h3>Fail Forward</h3>
+      <p>This is a safe space to try, fail, learn, and try again. That's how real artists are made.</p>
+    </div>
+    <div class="believe-item fade-up">
+      <p class="believe-num">06</p>
+      <h3>Best Part of Your Day</h3>
+      <p>We want every single person who walks through our doors to leave feeling better than when they came in.</p>
+    </div>
+  </div>
+</section>
+
+<!-- JOIN CTA -->
+<section class="join-section">
+  <div class="join-bg"></div>
+  <div class="join-content">
+    <h2 class="join-title">COME <span>JOIN</span><br>US</h2>
+    <p class="join-sub">Whether you're here for a workshop, a regular batch, or just to see what the vibe is — the door is always open.</p>
+    <div class="join-btns">
+      <a href="workshops.html" class="btn-primary">
+        Explore Workshops
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="contact.html" class="btn-outline">
+        Get in Touch
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+// NAV
+function toggleMenu(){
+  const o=document.getElementById('navOverlay');
+  const b=document.getElementById('hamburger');
+  const open=o.classList.toggle('open');
+  b.classList.toggle('open',open);
+  document.body.style.overflow=open?'hidden':'';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.getElementById('navOverlay').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+    document.body.style.overflow='';
+  }
+});
+
+// SCROLL REVEAL
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('visible'),i*80);
+    }
+  });
+},{threshold:0.1});
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+
+// CURSOR
+const cursor=document.getElementById('cursor');
+const ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;});
+(function animRing(){rx+=(mx-rx)*0.14;ry+=(my-ry)*0.14;ring.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;requestAnimationFrame(animRing);})();
+document.addEventListener('mouseleave',()=>{cursor.style.opacity='0';ring.style.opacity='0';});
+document.addEventListener('mouseenter',()=>{cursor.style.opacity='1';ring.style.opacity='1';});
+</script>
+</body>
+</html>

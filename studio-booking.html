@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio Booking — The Happening Space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{cursor:none!important}
+:root{
+  --red:#bc1f2e;--red-dark:#8f1520;--red-dim:rgba(188,31,46,0.1);
+  --black:#0a0a0a;--off-black:#111;--card-bg:#161616;
+  --border:rgba(255,255,255,0.08);--border-red:rgba(188,31,46,0.4);
+  --text:#f5f5f0;--text-muted:rgba(245,245,240,0.45);--text-mid:rgba(245,245,240,0.7);
+  --yellow:#f5e642;--green:#6aaf7e;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--text);font-family:'Syne',sans-serif;overflow-x:hidden}
+.cursor{position:fixed;width:12px;height:12px;background:var(--red);border-radius:50%;pointer-events:none;z-index:99999;top:0;left:0;transform:translate(-50%,-50%);transition:opacity 0.2s}
+.cursor-ring{position:fixed;width:38px;height:38px;border:2px solid rgba(188,31,46,0.75);border-radius:50%;pointer-events:none;z-index:99998;top:0;left:0;transform:translate(-50%,-50%)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;pointer-events:all}
+
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:0.1em;color:var(--text);line-height:1}
+.logo-text span{color:var(--red)}
+.hamburger{display:flex;flex-direction:column;justify-content:center;gap:6px;width:44px;height:44px;pointer-events:all;background:rgba(10,10,10,0.7);backdrop-filter:blur(10px);border:1px solid var(--border);padding:12px;z-index:300;transition:border-color 0.3s}
+.hamburger:hover{border-color:var(--red)}
+.hamburger span{display:block;width:20px;height:1.5px;background:var(--text);transition:transform 0.35s ease,opacity 0.25s ease,width 0.3s ease;transform-origin:center}
+.hamburger.open span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;width:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+.nav-overlay{position:fixed;inset:0;z-index:250;background:rgba(10,10,10,0.97);display:flex;flex-direction:column;justify-content:center;padding:4rem 3rem;opacity:0;pointer-events:none;transition:opacity 0.4s ease;backdrop-filter:blur(20px)}
+.nav-overlay.open{opacity:1;pointer-events:all}
+.nav-overlay-label{font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--text-muted);margin-bottom:2.5rem;display:flex;align-items:center;gap:0.75rem}
+.nav-overlay-label::before{content:'';width:24px;height:1px;background:var(--text-muted)}
+.nav-overlay-links{list-style:none;display:flex;flex-direction:column;gap:0}
+.nav-overlay-links li{border-bottom:1px solid var(--border);overflow:hidden;transform:translateY(20px);opacity:0;transition:transform 0.4s ease,opacity 0.4s ease}
+.nav-overlay.open .nav-overlay-links li:nth-child(1){transform:translateY(0);opacity:1;transition-delay:0.08s}
+.nav-overlay.open .nav-overlay-links li:nth-child(2){transform:translateY(0);opacity:1;transition-delay:0.13s}
+.nav-overlay.open .nav-overlay-links li:nth-child(3){transform:translateY(0);opacity:1;transition-delay:0.18s}
+.nav-overlay.open .nav-overlay-links li:nth-child(4){transform:translateY(0);opacity:1;transition-delay:0.23s}
+.nav-overlay.open .nav-overlay-links li:nth-child(5){transform:translateY(0);opacity:1;transition-delay:0.28s}
+.nav-overlay.open .nav-overlay-links li:nth-child(6){transform:translateY(0);opacity:1;transition-delay:0.33s}
+.nav-overlay-links a{display:flex;align-items:center;justify-content:space-between;text-decoration:none;padding:1.1rem 0;font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,6vw,3.8rem);letter-spacing:0.04em;color:var(--text);transition:color 0.2s,padding-left 0.25s;line-height:1}
+.nav-overlay-links a:hover{color:var(--red);padding-left:0.75rem}
+.link-num{font-family:'Syne',sans-serif;font-size:0.7rem;letter-spacing:0.15em;color:var(--text-muted);font-weight:400;align-self:flex-start;margin-top:0.4rem}
+.nav-overlay-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:2.5rem;flex-wrap:wrap;gap:1rem}
+.nav-overlay-address{font-size:0.75rem;color:var(--text-muted);line-height:1.6;font-style:normal}
+.nav-overlay-social{display:flex;gap:0.75rem}
+.nav-social-btn{width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);text-decoration:none;font-size:0.7rem;font-weight:700;transition:border-color 0.2s,color 0.2s}
+.nav-social-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* PAGE HERO */
+.page-hero{padding:8rem 2rem 5rem;position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.page-hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0a0a0a 0%,#1a0608 50%,#0a0a0a 100%)}
+.page-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(188,31,46,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(188,31,46,0.04) 1px,transparent 1px);background-size:60px 60px}
+.page-hero-content{position:relative;z-index:1;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:end}
+.page-eyebrow{font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:1rem;display:flex;align-items:center;gap:0.75rem}
+.page-eyebrow::before{content:'';width:24px;height:1px;background:var(--red)}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,9vw,7rem);line-height:0.9;letter-spacing:0.03em;color:var(--text)}
+.page-title span{color:var(--red)}
+.page-sub{font-size:0.95rem;color:var(--text-muted);font-weight:300;line-height:1.8;margin-bottom:0}
+
+/* MAIN LAYOUT */
+.main{max-width:1100px;margin:0 auto;padding:3rem 2rem 6rem;display:grid;grid-template-columns:1fr 400px;gap:3rem;align-items:start}
+
+/* LEFT SIDE */
+.left-col{}
+
+/* PRICING SECTION */
+.pricing-section{margin-bottom:2.5rem}
+.pricing-heading{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:0.04em;color:var(--text);margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem}
+.pricing-heading span{color:var(--red)}
+.pricing-heading::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* PRICING TABLE */
+.price-table{width:100%;border-collapse:collapse;margin-bottom:0.75rem}
+.price-table th{background:var(--red);color:#fff;padding:0.7rem 1rem;text-align:left;font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;font-family:'Syne',sans-serif;font-weight:700}
+.price-table th:not(:first-child){text-align:center}
+.price-table td{padding:0.85rem 1rem;border-bottom:1px solid var(--border);font-size:0.88rem;color:var(--text-mid);background:var(--card-bg)}
+.price-table td:first-child{color:var(--text);font-weight:500}
+.price-table td:not(:first-child){text-align:center;color:var(--yellow);font-weight:600;font-size:0.95rem}
+.price-table tr:last-child td{border-bottom:none}
+.price-table tr:hover td{background:rgba(255,255,255,0.02)}
+.price-note{font-size:0.75rem;color:var(--text-muted);padding:0.6rem 0.85rem;border-left:2px solid var(--border-red);background:var(--red-dim);margin-bottom:1.5rem;line-height:1.6}
+.price-note strong{color:var(--red)}
+
+/* AMENITIES */
+.amenities-section{margin-bottom:2.5rem}
+.amenities-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem}
+.amenity-item{display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0.85rem;background:var(--card-bg);border:1px solid var(--border);font-size:0.82rem;color:var(--text-mid);transition:border-color 0.2s}
+.amenity-item:hover{border-color:var(--border-red)}
+.amenity-item svg{width:15px;height:15px;stroke:var(--red);fill:none;stroke-width:2;flex-shrink:0}
+
+/* RIGHT SIDE — BOOKING FORM */
+.booking-card{background:var(--card-bg);border:1px solid var(--border);padding:2rem;position:sticky;top:6rem}
+.booking-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.04em;color:var(--text);margin-bottom:0.25rem}
+.booking-sub{font-size:0.78rem;color:var(--text-muted);margin-bottom:1.75rem;line-height:1.6}
+.form-field{margin-bottom:1.1rem}
+.form-field label{display:block;font-size:0.62rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.45rem;font-family:'Syne',sans-serif;font-weight:600}
+.form-field input,.form-field select,.form-field textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:0.75rem 0.9rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:300;outline:none;transition:border-color 0.2s;-webkit-appearance:none}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--red)}
+.form-field input::placeholder,.form-field textarea::placeholder{color:var(--text-muted)}
+.form-field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(245,245,240,0.4)'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.9rem center;background-color:rgba(255,255,255,0.04)}
+.form-field select option{background:#1c1c1c;color:var(--text)}
+.form-field textarea{resize:vertical;min-height:90px;line-height:1.6}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+
+/* PRICE ESTIMATE */
+.price-estimate{background:rgba(255,255,255,0.03);border:1px solid var(--border);padding:1rem;margin-bottom:1.25rem}
+.price-estimate-label{font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.35rem;font-family:'Syne',sans-serif}
+.price-estimate-val{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--yellow);letter-spacing:0.04em;line-height:1}
+.price-estimate-note{font-size:0.7rem;color:var(--text-muted);margin-top:0.2rem}
+
+.submit-btn{width:100%;background:var(--red);color:#fff;border:none;padding:1rem;font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:0.5rem}
+.submit-btn:hover{background:var(--red-dark)}
+.submit-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5}
+.form-note{font-size:0.68rem;color:var(--text-muted);text-align:center;margin-top:0.85rem;line-height:1.6}
+
+/* SUCCESS */
+.success-msg{display:none;text-align:center;padding:2rem 1rem}
+.success-msg.show{display:block}
+.success-icon{width:56px;height:56px;border:1px solid var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem}
+.success-icon svg{width:24px;height:24px;stroke:var(--green);fill:none;stroke-width:2}
+.success-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--text);margin-bottom:0.5rem}
+.success-sub{font-size:0.82rem;color:var(--text-muted);line-height:1.7}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:900px){
+  .main{grid-template-columns:1fr;gap:2rem;padding:2rem 1.25rem 5rem}
+  .booking-card{position:static}
+  .page-hero-content{grid-template-columns:1fr;gap:1.5rem}
+  .amenities-grid{grid-template-columns:1fr}
+  *{cursor:auto!important}
+  nav{padding:1rem 1.25rem}
+  .page-hero{padding:7rem 1.25rem 3.5rem}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="logo.png" alt="THS" style="width:40px;height:40px;object-fit:cover;border-radius:4px;flex-shrink:0">
+    <div class="logo-text">The <span>Happening</span><br>Space</div>
+  </a>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="nav-overlay" id="navOverlay">
+  <div>
+    <button onclick="toggleMenu()" style="position:absolute;top:1.5rem;right:1.5rem;background:none;border:1px solid rgba(255,255,255,0.15);color:var(--text);width:44px;height:44px;font-size:1.3rem;line-height:1;transition:border-color 0.2s,color 0.2s;pointer-events:all" onmouseover="this.style.borderColor='#bc1f2e';this.style.color='#bc1f2e'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--text)'">✕</button><p class="nav-overlay-label">Menu</p>
+    <ul class="nav-overlay-links">
+      <li><a href="index.html"><span>Home</span><span class="link-num">01</span></a></li>
+      <li><a href="workshops.html"><span>Workshops</span><span class="link-num">02</span></a></li>
+      <li><a href="batches.html"><span>Regular Batches</span><span class="link-num">03</span></a></li>
+      <li><a href="studio-booking.html"><span>Studio Booking</span><span class="link-num">04</span></a></li>
+      <li><a href="about.html"><span>About Us</span><span class="link-num">05</span></a></li>
+      <li><a href="contact.html"><span>Contact Us</span><span class="link-num">06</span></a></li>
+    </ul>
+    <div class="nav-overlay-bottom">
+      <address class="nav-overlay-address">311 – International Wealth Center<br>VIP Road, Surat, Gujarat</address>
+      <div class="nav-overlay-social">
+        <a href="#" class="nav-social-btn">IG</a>
+        <a href="#" class="nav-social-btn">YT</a>
+        <a href="#" class="nav-social-btn">WA</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-content">
+    <div>
+      <p class="page-eyebrow">The Happening Space</p>
+      <h1 class="page-title">STUDIO<br><span>BOOKING</span></h1>
+    </div>
+    <div>
+      <p class="page-sub">Professional studio space available for dancers, musicians, content creators and photographers. Fully equipped, centrally located in Surat.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT -->
+  <div class="left-col" style="animation:fadeUp 0.5s ease both">
+
+    <!-- PER DAY PRICING -->
+    <div class="pricing-section">
+      <h2 class="pricing-heading">Per <span>Day</span></h2>
+      <table class="price-table">
+        <thead>
+          <tr>
+            <th>Duration</th>
+            <th>Weekdays</th>
+            <th>Weekends</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1 Hour</td>
+            <td>₹2,300 / hr</td>
+            <td rowspan="3" style="vertical-align:middle;font-size:1.1rem">₹2,500 / hr</td>
+          </tr>
+          <tr>
+            <td>2 Hours or more</td>
+            <td>₹2,100 / hr</td>
+          </tr>
+          <tr>
+            <td>6 Hours or more</td>
+            <td>₹1,800 / hr</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="price-note">* These prices are <strong>not valid for Dance Workshops</strong></p>
+    </div>
+
+    <!-- MONTHLY PRICING -->
+    <div class="pricing-section">
+      <h2 class="pricing-heading">Monthly</h2>
+      <table class="price-table">
+        <thead>
+          <tr>
+            <th>Duration</th>
+            <th>Hourly Rate</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>12 Hours or more</td>
+            <td>₹1,350 / hr</td>
+            <td>₹16,200</td>
+          </tr>
+          <tr>
+            <td>24 Hours or more</td>
+            <td>₹1,250 / hr</td>
+            <td>₹30,000</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="price-note">* These prices are <strong>not valid for Dance Workshops</strong><br>* Monthly package does <strong>not include Weekends</strong></p>
+    </div>
+
+    <!-- AMENITIES -->
+    <div class="amenities-section">
+      <h2 class="pricing-heading">Ameni<span>ties</span></h2>
+      <div class="amenities-grid">
+        <div class="amenity-item">
+          <svg viewBox="0 0 24 24"><path d="M9.5 14.5L3 21"/><path d="M12 8L9 5 4 10l3 3"/><path d="M14.5 9.5l-5 5"/><path d="M20 4l-3.5 3.5"/><path d="M16 8l-2-2 5-5 2 2-5 5z"/></svg>
+          Air Conditioner
+        </div>
+        <div class="amenity-item">
+          <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          Music System
+        </div>
+        <div class="amenity-item">
+          <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Tables & Chairs
+        </div>
+        <div class="amenity-item">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          Special Shoot Lights
+        </div>
+        <div class="amenity-item">
+          <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+          Unlimited Wi-Fi
+        </div>
+        <div class="amenity-item">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          Wall Sized Mirror
+        </div>
+        <div class="amenity-item">
+          <svg viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+          Plug Points
+        </div>
+        <div class="amenity-item">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Open Deck Area
+        </div>
+        <div class="amenity-item">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Projector
+        </div>
+        <div class="amenity-item">
+          <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          First Aid Kit
+        </div>
+        <div class="amenity-item">
+          <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+          Fire Extinguisher
+        </div>
+        <div class="amenity-item">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Assistant
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT — BOOKING FORM -->
+  <div class="booking-card" style="animation:fadeUp 0.5s ease 0.15s both">
+    <div id="bookingForm">
+      <h3 class="booking-title">Book the Studio</h3>
+      <p class="booking-sub">Fill in your details and we'll confirm availability within 24 hours.</p>
+
+      <div class="form-field">
+        <label>Full Name *</label>
+        <input type="text" id="f-name" placeholder="Your name">
+      </div>
+      <div class="form-field">
+        <label>WhatsApp Number *</label>
+        <input type="tel" id="f-phone" placeholder="+91 98765 43210">
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Date *</label>
+          <input type="date" id="f-date">
+        </div>
+        <div class="form-field">
+          <label>Day Type</label>
+          <select id="f-daytype" onchange="calcPrice()">
+            <option value="weekday">Weekday</option>
+            <option value="weekend">Weekend</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Start Time *</label>
+          <select id="f-start">
+            <option value="">Select time</option>
+            <option value="6:00 AM">6:00 AM</option>
+            <option value="7:00 AM">7:00 AM</option>
+            <option value="8:00 AM">8:00 AM</option>
+            <option value="9:00 AM">9:00 AM</option>
+            <option value="10:00 AM">10:00 AM</option>
+            <option value="11:00 AM">11:00 AM</option>
+            <option value="12:00 PM">12:00 PM</option>
+            <option value="1:00 PM">1:00 PM</option>
+            <option value="2:00 PM">2:00 PM</option>
+            <option value="3:00 PM">3:00 PM</option>
+            <option value="4:00 PM">4:00 PM</option>
+            <option value="5:00 PM">5:00 PM</option>
+            <option value="6:00 PM">6:00 PM</option>
+            <option value="7:00 PM">7:00 PM</option>
+            <option value="8:00 PM">8:00 PM</option>
+            <option value="9:00 PM">9:00 PM</option>
+            <option value="10:00 PM">10:00 PM</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Duration (hours) *</label>
+          <select id="f-hours" onchange="calcPrice()">
+            <option value="1">1 hour</option>
+            <option value="2">2 hours</option>
+            <option value="3">3 hours</option>
+            <option value="4">4 hours</option>
+            <option value="5">5 hours</option>
+            <option value="6">6 hours</option>
+            <option value="7">7 hours</option>
+            <option value="8">8 hours</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Purpose of Booking *</label>
+        <input type="text" id="f-purpose" placeholder="e.g. Dance rehearsal, photo shoot, music recording…">
+      </div>
+      <div class="form-field">
+        <label>Number of People</label>
+        <input type="number" id="f-people" placeholder="e.g. 5" min="1">
+      </div>
+      <div class="form-field">
+        <label>Additional Notes</label>
+        <textarea id="f-notes" placeholder="Any specific requirements, equipment needed, etc."></textarea>
+      </div>
+
+      <!-- PRICE ESTIMATE -->
+      <div class="price-estimate">
+        <p class="price-estimate-label">Estimated Total</p>
+        <p class="price-estimate-val" id="priceEstimate">₹2,300</p>
+        <p class="price-estimate-note">Final price confirmed on booking. Prices not valid for dance workshops.</p>
+      </div>
+
+      <button class="submit-btn" onclick="submitBooking()">
+        Request Booking
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <p class="form-note">We'll confirm your booking via WhatsApp within 24 hours.</p>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-msg" id="successMsg">
+      <div class="success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <h3 class="success-title">Request Sent!</h3>
+      <p class="success-sub">We've received your booking request and will confirm availability on WhatsApp within 24 hours.<br><br>Looking forward to having you at The Happening Space.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// PRICE CALCULATOR
+function calcPrice(){
+  const hours   = parseInt(document.getElementById('f-hours').value)||1;
+  const daytype = document.getElementById('f-daytype').value;
+  let rate;
+  if(daytype === 'weekend'){
+    rate = 2500;
+  } else {
+    if(hours >= 6)      rate = 1800;
+    else if(hours >= 2) rate = 2100;
+    else                rate = 2300;
+  }
+  const total = rate * hours;
+  document.getElementById('priceEstimate').textContent = '₹' + total.toLocaleString('en-IN');
+}
+
+// Auto detect weekday/weekend from date
+document.getElementById('f-date').addEventListener('change', function(){
+  const day = new Date(this.value).getDay();
+  document.getElementById('f-daytype').value = (day===0||day===6) ? 'weekend' : 'weekday';
+  calcPrice();
+});
+
+// SUBMIT — sends via WhatsApp
+function submitBooking(){
+  const name    = document.getElementById('f-name').value.trim();
+  const phone   = document.getElementById('f-phone').value.trim();
+  const date    = document.getElementById('f-date').value;
+  const start   = document.getElementById('f-start').value;
+  const hours   = document.getElementById('f-hours').value;
+  const purpose = document.getElementById('f-purpose').value;
+  const people  = document.getElementById('f-people').value;
+  const notes   = document.getElementById('f-notes').value.trim();
+  const price   = document.getElementById('priceEstimate').textContent;
+  const daytype = document.getElementById('f-daytype').value;
+
+  if(!name||!phone||!date||!start||!purpose){
+    alert('Please fill in all required fields.');
+    return;
+  }
+
+  const msg = `Hi! I'd like to book the studio at The Happening Space.
+
+*Name:* ${name}
+*Phone:* ${phone}
+*Date:* ${date} (${daytype})
+*Start Time:* ${start}
+*Duration:* ${hours} hour${hours>1?'s':''}
+*Purpose:* ${purpose}
+*No. of People:* ${people||'Not specified'}
+*Estimated Total:* ${price}
+${notes?`*Notes:* ${notes}`:''}
+
+Please confirm availability.`;
+
+  const encoded = encodeURIComponent(msg);
+  window.open(`https://wa.me/919407392073?text=${encoded}`, '_blank');
+
+  document.getElementById('bookingForm').style.display = 'none';
+  document.getElementById('successMsg').classList.add('show');
+}
+
+// NAV
+function toggleMenu(){
+  const o=document.getElementById('navOverlay');
+  const b=document.getElementById('hamburger');
+  const open=o.classList.toggle('open');
+  b.classList.toggle('open',open);
+  document.body.style.overflow=open?'hidden':'';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.getElementById('navOverlay').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+    document.body.style.overflow='';
+  }
+});
+
+// CURSOR
+const cursor=document.getElementById('cursor');
+const ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;});
+(function animRing(){rx+=(mx-rx)*0.14;ry+=(my-ry)*0.14;ring.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;requestAnimationFrame(animRing);})();
+document.addEventListener('mouseleave',()=>{cursor.style.opacity='0';ring.style.opacity='0';});
+document.addEventListener('mouseenter',()=>{cursor.style.opacity='1';ring.style.opacity='1';});
+
+calcPrice();
+</script>
+</body>
+</html>

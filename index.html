@@ -233,7 +233,7 @@ footer{background:var(--off-black);border-top:1px solid var(--border);padding:4r
 <!-- NAV -->
 <nav id="navbar">
   <a href="index.html" class="nav-logo">
-    <div class="logo-box">TH</div>
+    <img src="logo.png" alt="THS" style="width:40px;height:40px;object-fit:cover;border-radius:4px;flex-shrink:0">
     <div class="logo-text">The <span>Happening</span><br>Space</div>
   </a>
   <div class="hamburger" id="hamburger" onclick="toggleMenu()">
@@ -244,7 +244,7 @@ footer{background:var(--off-black);border-top:1px solid var(--border);padding:4r
 <!-- FULL SCREEN MENU OVERLAY -->
 <div class="nav-overlay" id="navOverlay">
   <div class="nav-overlay-inner">
-    <p class="nav-overlay-label">Menu</p>
+    <button onclick="toggleMenu()" style="position:absolute;top:1.5rem;right:1.5rem;background:none;border:1px solid rgba(255,255,255,0.15);color:var(--text);width:44px;height:44px;font-size:1.3rem;line-height:1;transition:border-color 0.2s,color 0.2s;pointer-events:all" onmouseover="this.style.borderColor='#bc1f2e';this.style.color='#bc1f2e'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='var(--text)'">✕</button><p class="nav-overlay-label">Menu</p>
     <ul class="nav-overlay-links">
       <li><a href="index.html" class="active"><span>Home</span><span class="link-num">01</span></a></li>
       <li><a href="workshops.html"><span>Workshops</span><span class="link-num">02</span></a></li>
