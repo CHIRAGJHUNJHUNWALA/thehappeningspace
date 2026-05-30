@@ -268,6 +268,10 @@ tr:hover td{background:rgba(255,255,255,0.02)}
       <div class="nav-item" onclick="showView('workshops')">
         <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>All Workshops
       </div>
+      <div class="nav-section-title">Content</div>
+      <div class="nav-item" onclick="showView('abouteditor')">
+        <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit About Us
+      </div>
       <div class="nav-section-title">Students</div>
       <div class="nav-item" onclick="showView('registrations')">
         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -354,8 +358,44 @@ tr:hover td{background:rgba(255,255,255,0.02)}
       <div class="ws-grid" id="workshopGrid"></div>
     </div>
 
-    <!-- REGISTRATIONS -->
-    <div class="view" id="view-registrations">
+    <!-- ABOUT US EDITOR -->
+    <div class="view" id="view-abouteditor">
+      <div class="page-header">
+        <div><h1 class="page-title">Edit About Us</h1><p class="page-sub">Changes save to Firebase and update the About Us page</p></div>
+        <button class="btn btn-red" onclick="saveAboutContent()">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Save Changes
+        </button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+        <div class="table-wrap" style="padding:1.5rem">
+          <p class="section-bar-title" style="margin-bottom:1.25rem">Studio Info</p>
+          <div class="form-group" style="margin-bottom:1rem"><label>Studio Tagline</label><input type="text" id="ab-tagline" placeholder="e.g. More than a studio"></div>
+          <div class="form-group" style="margin-bottom:1rem"><label>Founded Date</label><input type="text" id="ab-founded" placeholder="e.g. September 8, 2024"></div>
+          <div class="form-group" style="margin-bottom:1rem"><label>Story Paragraph 1</label><textarea id="ab-story1" style="min-height:100px" placeholder="How it started…"></textarea></div>
+          <div class="form-group" style="margin-bottom:1rem"><label>Story Paragraph 2</label><textarea id="ab-story2" style="min-height:100px" placeholder="The idea behind it…"></textarea></div>
+          <div class="form-group" style="margin-bottom:1rem"><label>Story Paragraph 3</label><textarea id="ab-story3" style="min-height:100px" placeholder="What makes it different…"></textarea></div>
+          <div class="form-group" style="margin-bottom:1rem"><label>Core Quote</label><textarea id="ab-quote" style="min-height:60px" placeholder="The big quote on the page…"></textarea></div>
+        </div>
+        <div class="table-wrap" style="padding:1.5rem">
+          <p class="section-bar-title" style="margin-bottom:1.25rem">Founders</p>
+          <div class="form-group" style="margin-bottom:1rem"><label>Founder 1 — Name</label><input type="text" id="ab-f1name" placeholder="Chirag Jhunjhunwala"></div>
+          <div class="form-group" style="margin-bottom:1rem"><label>Founder 1 — Bio</label><textarea id="ab-f1bio" style="min-height:80px"></textarea></div>
+          <div class="form-group" style="margin-bottom:1rem"><label>Founder 2 — Name</label><input type="text" id="ab-f2name" placeholder="Govind Bhutra"></div>
+          <div class="form-group" style="margin-bottom:1rem"><label>Founder 2 — Bio</label><textarea id="ab-f2bio" style="min-height:80px"></textarea></div>
+          <p class="section-bar-title" style="margin-bottom:1.25rem;margin-top:1.5rem">Stats</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+            <div class="form-group"><label>Workshops Done</label><input type="text" id="ab-stat1" placeholder="1000+"></div>
+            <div class="form-group"><label>Regular Batches</label><input type="text" id="ab-stat2" placeholder="5"></div>
+            <div class="form-group"><label>Students Weekly</label><input type="text" id="ab-stat3" placeholder="150+"></div>
+            <div class="form-group"><label>Stat 4 Label</label><input type="text" id="ab-stat4label" placeholder="Community"></div>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap" style="padding:1.5rem;margin-bottom:1.5rem">
+        <p class="section-bar-title" style="margin-bottom:1.25rem">What We Believe (6 points)</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem" id="believeEditor"></div>
+      </div>
+    </div>
       <div class="page-header">
         <div><h1 class="page-title">Registrations</h1><p class="page-sub">All student enrollments</p></div>
         <button class="btn btn-outline" onclick="exportCSV()">
@@ -447,24 +487,12 @@ tr:hover td{background:rgba(255,255,255,0.02)}
       <!-- PACKAGES -->
       <div class="slots-editor" style="margin-top:0.5rem">
         <div class="slots-editor-title">Packages / Pricing</div>
-        <div style="display:grid;grid-template-columns:1fr 90px 100px 28px;gap:0.4rem;margin-bottom:0.4rem">
-          <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Package Name</span>
-          <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Price ₹</span>
-          <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Badge</span>
-          <span></span>
-        </div>
         <div id="packagesEditor"></div>
         <button class="add-slot-btn" onclick="addPackageRow()">+ Add Package</button>
       </div>
       <!-- CLASS DETAILS -->
       <div class="slots-editor">
         <div class="slots-editor-title">Class Details</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;margin-bottom:0.4rem">
-          <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Date</span>
-          <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Time</span>
-          <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Song / Track</span>
-          <span style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Spots</span>
-        </div>
         <div id="slotsEditor"></div>
         <button class="add-slot-btn" onclick="addSlotRow()">+ Add Class</button>
       </div>
@@ -690,6 +718,7 @@ window.showView = function(id){
   document.querySelectorAll('.nav-item').forEach(n=>{
     if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('active');
   });
+  if(id==='abouteditor') loadAboutContent();
 };
 
 /* ══════════════════════════════════════
@@ -858,9 +887,7 @@ function wsCardHTML(w){
     : `background:${w.posterBg||'linear-gradient(135deg,#1a0407,#bc1f2e)'}`;
   const dateStr  = w.dateFrom ? w.dateFrom + (w.dateTo&&w.dateTo!==w.dateFrom?' → '+w.dateTo:'') : '—';
 
-  return `<div class="ws-card" style="position:relative">
-    <!-- Click anywhere except buttons to open detail -->
-    <div onclick="openWsDetail('${w.id}')" style="position:absolute;inset:0;z-index:0;cursor:pointer"></div>
+  return `<div class="ws-card" style="position:relative" onclick="openWsDetail('${w.id}')">
     <!-- Poster — 4:5 ratio -->
     <div class="ws-card-poster" style="padding-top:125%;position:relative;overflow:hidden">
       <div style="position:absolute;inset:0;${bgStyle}"></div>
@@ -884,26 +911,26 @@ function wsCardHTML(w){
         <div class="spots-label"><span>Spots filled</span><span>${usedSp}/${totalSp}</span></div>
         <div class="spots-track"><div class="spots-fill ${pct>=100?'full':pct>=75?'warn':''}" style="width:${pct}%"></div></div>
       </div>
-      <div class="ws-card-actions" style="position:relative;z-index:2">
-        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openEditWorkshop('${w.id}')">
+      <div class="ws-card-actions" onclick="event.stopPropagation()">
+        <button class="btn btn-outline btn-sm" onclick="openEditWorkshop('${w.id}')">
           <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit
         </button>
-        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openSpotsModal('${w.id}')">
+        <button class="btn btn-outline btn-sm" onclick="openSpotsModal('${w.id}')">
           <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg>Spots
         </button>
-        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openManualStudent('${w.id}')">
+        <button class="btn btn-outline btn-sm" onclick="openManualStudent('${w.id}')">
           <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>Add Student
         </button>
-        ${slots.map((s,si)=>`<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();printSlot('${w.id}','${s.id}')">
+        ${slots.map((s,si)=>`<button class="btn btn-ghost btn-sm" onclick="printSlot('${w.id}','${s.id}')">
           <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print Slot ${si+1}
         </button>`).join('')}
-        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openStatusMenu('${w.id}',this)">
+        <button class="btn btn-outline btn-sm" onclick="openStatusMenu('${w.id}',this)">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>Status
         </button>
-        ${w.status==='draft'?`<button class="btn btn-green btn-sm" onclick="event.stopPropagation();publishDraft('${w.id}')">
+        ${w.status==='draft'?`<button class="btn btn-green btn-sm" onclick="publishDraft('${w.id}')">
           <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Publish
         </button>`:''}
-        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();openConfirmDelete('${w.id}')">
+        <button class="btn btn-danger btn-sm" onclick="openConfirmDelete('${w.id}')">
           <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete
         </button>
       </div>
@@ -1131,25 +1158,48 @@ window.openEditWorkshop = function(id){
 
 window.addPackageRow = function(p={}){
   const div = document.createElement('div');
-  div.style.cssText = 'display:grid;grid-template-columns:1fr 90px 100px 28px;gap:0.4rem;margin-bottom:0.5rem;align-items:center';
+  div.style.cssText = 'background:var(--bg3);border:1px solid var(--border);padding:0.85rem;margin-bottom:0.6rem;position:relative';
   div.innerHTML = `
-    <input type="text"   placeholder="Package name e.g. Single Session" value="${p.name||''}" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;min-width:0" class="pkg-name">
-    <input type="number" placeholder="₹ Price" value="${p.price||''}" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;min-width:0" class="pkg-price">
-    <input type="text"   placeholder="Badge" value="${p.badge||''}" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;min-width:0" class="pkg-badge">
-    <button onclick="this.parentElement.remove()" class="slot-delete"><svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+    <button onclick="this.closest('div').remove()" style="position:absolute;top:0.6rem;right:0.6rem;background:none;border:1px solid rgba(229,115,115,0.3);color:#e57373;width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.85rem;line-height:1">✕</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;padding-right:2rem">
+      <div>
+        <p style="font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">Package Name</p>
+        <input type="text" placeholder="e.g. Single Session" value="${p.name||''}" class="pkg-name" style="width:100%;background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
+      </div>
+      <div>
+        <p style="font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">Price ₹</p>
+        <input type="number" placeholder="900" value="${p.price||''}" class="pkg-price" style="width:100%;background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
+      </div>
+      <div>
+        <p style="font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">Badge (optional)</p>
+        <input type="text" placeholder="Best Value" value="${p.badge||''}" class="pkg-badge" style="width:100%;background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
+      </div>
+    </div>`;
   document.getElementById('packagesEditor').appendChild(div);
 };
 
 window.addSlotRow = function(s={}){
   const div = document.createElement('div');
-  div.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;margin-bottom:0.5rem';
+  div.style.cssText = 'background:var(--bg3);border:1px solid var(--border);padding:0.85rem;margin-bottom:0.6rem;position:relative';
   div.innerHTML = `
-    <input type="text"   placeholder="Date e.g. Saturday, 7 Jun 2025" value="${s.date||''}" class="slot-date-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;min-width:0">
-    <input type="text"   placeholder="Time e.g. 11:00 AM – 1:00 PM" value="${s.time||''}" class="slot-time-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;min-width:0">
-    <input type="text"   placeholder="Song / Track" value="${s.song||''}" class="slot-song-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;min-width:0">
-    <div style="display:grid;grid-template-columns:1fr 32px;gap:0.4rem">
-      <input type="number" placeholder="Spots e.g. 20" value="${s.totalSpots||''}" min="1" class="slot-spots-inp" style="background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;min-width:0">
-      <button onclick="this.closest('div').parentElement.remove()" class="slot-delete"><svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <button onclick="this.closest('div').remove()" style="position:absolute;top:0.6rem;right:0.6rem;background:none;border:1px solid rgba(229,115,115,0.3);color:#e57373;width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.85rem;line-height:1">✕</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;padding-right:2rem">
+      <div>
+        <p style="font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">Date</p>
+        <input type="text" placeholder="e.g. Saturday, 7 Jun 2025" value="${s.date||''}" class="slot-date-inp" style="width:100%;background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
+      </div>
+      <div>
+        <p style="font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">Time</p>
+        <input type="text" placeholder="e.g. 11:00 AM – 1:00 PM" value="${s.time||''}" class="slot-time-inp" style="width:100%;background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
+      </div>
+      <div>
+        <p style="font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">Song / Track</p>
+        <input type="text" placeholder="e.g. Calm Down – Rema" value="${s.song||''}" class="slot-song-inp" style="width:100%;background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
+      </div>
+      <div>
+        <p style="font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem">Total Spots</p>
+        <input type="number" placeholder="e.g. 20" value="${s.totalSpots||''}" min="1" class="slot-spots-inp" style="width:100%;background:var(--bg2);border:1px solid var(--border2);padding:0.5rem 0.65rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none">
+      </div>
     </div>`;
   document.getElementById('slotsEditor').appendChild(div);
 };
@@ -1190,10 +1240,10 @@ window.saveWorkshop = async function(saveStatus){
     };
   }).filter(s=>s.date);
 
-  // Compress poster if it's a base64 image (Firestore has 1MB doc limit)
+  // Compress poster — higher quality, larger size for crisp display
   let posterToSave = pendingPosterURL || existing?.poster || '';
   if(posterToSave && posterToSave.startsWith('data:')) {
-    posterToSave = await compressImage(posterToSave, 400, 0.6);
+    posterToSave = await compressImage(posterToSave, 800, 0.85);
   }
 
   const wsData = {
@@ -1292,9 +1342,17 @@ window.closeConfirm = function(){
   deleteTargetId = null;
 };
 window.confirmDeleteAction = async function(){
+  const w    = workshops.find(x=>x.id===deleteTargetId);
+  const name = w?.artist || '';
+
+  // Delete all registrations for this workshop
+  const wsRegs = registrations.filter(r=>r.workshop===name);
+  await Promise.all(wsRegs.map(r=>deleteDoc(doc(db,'registrations',r.id))));
+
+  // Delete the workshop
   await deleteDoc(doc(db,'workshops',deleteTargetId));
   closeConfirm();
-  showToast('Workshop deleted');
+  showToast(`"${name}" deleted — ${wsRegs.length} registration${wsRegs.length!==1?'s':''} also removed`);
 };
 
 /* ══════════════════════════════════════
@@ -1493,6 +1551,60 @@ function renderPayTable(search=''){
 }
 
 window.searchPayments = function(q){ renderPayTable(q); };
+
+/* ══════════════════════════════════════
+   ABOUT US EDITOR
+══════════════════════════════════════ */
+async function loadAboutContent(){
+  try {
+    const d = await getDoc(doc(db,'settings','about'));
+    initAboutEditor(d.exists() ? d.data() : {});
+  } catch(e){ initAboutEditor({}); }
+}
+
+function initAboutEditor(data){
+  const defaults = {
+    tagline:'More than a studio', founded:'September 8, 2024',
+    story1:'On September 8, 2024, two friends from the same school, same batch, same city — decided to build something Surat had never seen before.',
+    story2:'The idea was simple but powerful — build a community stronger than ever.',
+    story3:'We come from business and marketing — not dance. But that\'s exactly what makes The Happening Space different.',
+    quote:'Learn, fail, make friends, spend the best time of your day at your second home.',
+    f1name:'Chirag Jhunjhunwala', f1bio:'Born and brought up in Surat. Business and marketing background.',
+    f2name:'Govind Bhutra', f2bio:'Same school, same batch, same city.',
+    stat1:'1000+', stat2:'5', stat3:'150+', stat4label:'Community',
+    believes:[
+      {title:'Everyone Belongs',text:'Whether you\'ve been dancing for 10 years or 10 days — this space was made for you.'},
+      {title:'Passion Has a Home',text:'We built this for every person who needed a space to pursue what they love.'},
+      {title:'Community is Everything',text:'The people you meet here become your people.'},
+      {title:'Growth Never Stops',text:'We grow with every student, every artist, every workshop.'},
+      {title:'Fail Forward',text:'This is a safe space to try, fail, learn, and try again.'},
+      {title:'Best Part of Your Day',text:'We want every person who walks through our doors to leave feeling better.'},
+    ]
+  };
+  const d = {...defaults,...data};
+  ['tagline','founded','story1','story2','story3','quote','f1name','f1bio','f2name','f2bio','stat1','stat2','stat3','stat4label'].forEach(k=>{
+    const el = document.getElementById('ab-'+k); if(el) el.value = d[k]||'';
+  });
+  const be = document.getElementById('believeEditor');
+  if(be) be.innerHTML = (d.believes||defaults.believes).map((b,i)=>`
+    <div style="background:var(--bg3);border:1px solid var(--border);padding:1rem">
+      <div class="form-group" style="margin-bottom:0.6rem"><label>Title ${i+1}</label><input type="text" id="bel-title-${i}" value="${b.title||''}"></div>
+      <div class="form-group"><label>Text</label><textarea id="bel-text-${i}" style="min-height:70px">${b.text||''}</textarea></div>
+    </div>`).join('');
+}
+
+window.saveAboutContent = async function(){
+  const data = {};
+  ['tagline','founded','story1','story2','story3','quote','f1name','f1bio','f2name','f2bio','stat1','stat2','stat3','stat4label'].forEach(k=>{
+    const el = document.getElementById('ab-'+k); if(el) data[k] = el.value.trim();
+  });
+  data.believes = Array.from({length:6},(_,i)=>({
+    title:(document.getElementById('bel-title-'+i)||{}).value||'',
+    text:(document.getElementById('bel-text-'+i)||{}).value||'',
+  }));
+  await setDoc(doc(db,'settings','about'), data);
+  showToast('About Us saved to Firebase ✓');
+};
 
 window.exportCSV = function(){
   if(!registrations.length){ showToast('No registrations to export','error'); return; }

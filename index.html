@@ -637,7 +637,7 @@ async function loadWorkshops() {
         : `background:${w.posterBg||'linear-gradient(145deg,#1a0407,#bc1f2e)'};width:100%;height:100%`;
 
       return `
-        <div class="workshop-card" style="opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease">
+        <div class="workshop-card" style="opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease;cursor:pointer" onclick="window.location.href='workshop-detail.html?id=${w.id}'">
           ${isFull ? '<span class="card-tag" style="background:#666">Full</span>' : ''}
           <div class="card-poster-wrap">
             <div class="card-poster">

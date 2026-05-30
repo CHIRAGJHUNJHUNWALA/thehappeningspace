@@ -322,7 +322,7 @@ function render() {
       : `<span class="btn-enroll disabled">${status==='full'?'Sold Out':'Cancelled'}</span>`;
 
     return `
-      <div class="ws-card status-${status}" style="animation:fadeUp 0.5s ease both">
+      <div class="ws-card status-${status}" style="animation:fadeUp 0.5s ease both;cursor:pointer" onclick="window.location.href='workshop-detail.html?id=${w.id}'">
         ${bannerHTML}
         <div class="ws-poster">
           <div class="ws-poster-bg" style="${posterStyle}"></div>
