@@ -144,8 +144,8 @@ tr:hover td{background:rgba(255,255,255,0.02)}
 .form-row.full{grid-template-columns:1fr}
 .form-group{display:flex;flex-direction:column;gap:0.4rem}
 .form-group label{font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);font-family:'Syne',sans-serif;font-weight:600}
-.form-group input,.form-group select,.form-group textarea{background:var(--bg3);border:1px solid var(--border2);padding:0.65rem 0.85rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;transition:border-color 0.2s;width:100%}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--red)}
+.form-group input,.form-group select,.form-group textarea,.form-group input[type="date"]{background:var(--bg3);border:1px solid var(--border2);padding:0.65rem 0.85rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;transition:border-color 0.2s;width:100%;color-scheme:dark}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus,.form-group input[type="date"]:focus{border-color:var(--red)}
 .form-group select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(240,237,230,0.4)'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.85rem center}
 .form-group option{background:#1c1c1c}
 .form-group textarea{resize:vertical;min-height:80px;line-height:1.6}
@@ -419,11 +419,11 @@ tr:hover td{background:rgba(255,255,255,0.02)}
       <div class="form-row">
         <div class="form-group">
           <label>Workshop Start Date *</label>
-          <input type="date" id="wsDateFrom" style="color-scheme:dark">
+          <input type="date" id="wsDateFrom" style="color-scheme:dark;width:100%;background:var(--bg3);border:1px solid var(--border2);padding:0.65rem 0.85rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none">
         </div>
         <div class="form-group">
-          <label>Workshop End Date <span style="font-weight:300;color:var(--muted)">(if multi-day)</span></label>
-          <input type="date" id="wsDateTo" style="color-scheme:dark">
+          <label>Workshop End Date <span style="font-weight:300;color:var(--muted);font-size:0.75em">(if multi-day)</span></label>
+          <input type="date" id="wsDateTo" style="color-scheme:dark;width:100%;background:var(--bg3);border:1px solid var(--border2);padding:0.65rem 0.85rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none">
         </div>
       </div>
       <div class="form-row full">
